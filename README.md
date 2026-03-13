@@ -2,6 +2,8 @@
 
 Angular 20+ application built with DevExtreme UI components. It provides responsive UI templates for common LOB (Line of Business) patterns including CRM, analytics dashboards, planning, and user management.
 
+![SaaS WebApp](/images/ui-template-gallery.png)
+
 ## Prerequisites
 
 - Node.js 18+
