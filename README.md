@@ -1,52 +1,50 @@
 # SaaS WebApp
 
-Angular 20+ application built with DevExtreme UI components. Forked from [DevExpress/devextreme-ui-template-gallery](https://github.com/DevExpress/devextreme-ui-template-gallery) and extended with features commonly found in enterprise SaaS applications:
-
-- **Master-Detail patterns** — CRUD views with nested detail panels
-- **Authentication & Authorization** — consuming a SaaS API backend
-- **Subscription management** — plan tiers, upgrades, and renewals
-- **Pricing management** — configurable pricing plans and billing cycles
-- **Permission management** — role-based access control
-- **Payments management** — Stripe integration for invoicing and checkout
-- And much more
+An Angular 20 frontend for building multi-tenant SaaS products. Built on top of [devextreme-ui-gallery](https://github.com/DevExpress/devextreme-ui-template-gallery) and redesigned to cover real-world enterprise needs out of the box.
 
 ![SaaS WebApp](/images/ui-template-gallery.png)
 
-## Prerequisites
+## What's included
 
-- Node.js 18+
-- npm 9+
-- **A valid [DevExtreme license](https://js.devexpress.com/Licensing/)** is required to use the DevExtreme components in this project. [Free trial available](https://js.devexpress.com/Buy/).
+This is not just a UI template. It ships with the building blocks you actually need to launch a SaaS product:
 
-## Tech Stack
+- **Auth & permissions** · Login, registration, role-based access control, and API-driven authorization
+- **Subscription & pricing** · Plan management, billing cycles, upgrades, and renewals
+- **Payments** · Stripe integration for checkout and invoicing
+- **Master-detail views** · Full CRUD with nested detail panels, ready for any entity
+- **Dashboards & analytics** · CRM boards, sales reports, and KPI cards
+- **Scheduler & task management** · Planning tools with Gantt, Kanban, and calendar views
 
-- **Angular** ~20.3
-- **DevExtreme** 25.2 (`devextreme`, `devextreme-angular`)
-- **TypeScript** ~5.8
-- **RxJS** ^7.8
+## Tech stack
 
-## Get Started
+| | |
+|---|---|
+| Angular | ~20.3 |
+| DevExtreme | 25.2 |
+| TypeScript | ~5.8 |
+| RxJS | ^7.8 |
+
+## Getting started
 
 ```bash
 npm install
 npm start
 ```
 
-The app will be available at `http://localhost:4200`.
+Open `http://localhost:4200`.
 
-## Project Structure
+## Project structure
 
 ```
-src/
-  app/
-    components/   # Reusable UI components
-    layouts/      # Application layouts
-    pages/        # Route-level page components
-    services/     # Angular services
-    types/        # TypeScript type definitions
-    theme/        # Theme styles and variables
+src/app/
+  components/   # Reusable UI components
+  layouts/      # App shell and navigation
+  pages/        # Route-level views
+  services/     # Data and business logic
+  types/        # TypeScript definitions
+  theme/        # Styles and theme variables
 ```
 
 ## License
 
-This project depends on **DevExtreme**, which requires a commercial license from DevExpress. Review the [DevExtreme License Agreement](https://js.devexpress.com/Licensing/) before using this project in production.
+This project depends on DevExtreme, which requires a [commercial license](https://js.devexpress.com/Angular/Documentation/Guide/Common/Licensing/) from DevExpress.
