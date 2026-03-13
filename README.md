@@ -1,6 +1,14 @@
 # SaaS WebApp
 
-Angular 20+ application built with DevExtreme UI components. It provides responsive UI templates for common LOB (Line of Business) patterns including CRM, analytics dashboards, planning, and user management.
+Angular 20+ application built with DevExtreme UI components. Forked from [DevExpress/devextreme-ui-template-gallery](https://github.com/DevExpress/devextreme-ui-template-gallery) and extended with features commonly found in enterprise SaaS applications:
+
+- **Master-Detail patterns** — CRUD views with nested detail panels
+- **Authentication & Authorization** — consuming a SaaS API backend
+- **Subscription management** — plan tiers, upgrades, and renewals
+- **Pricing management** — configurable pricing plans and billing cycles
+- **Permission management** — role-based access control
+- **Payments management** — Stripe integration for invoicing and checkout
+- And much more
 
 ![SaaS WebApp](/images/ui-template-gallery.png)
 
