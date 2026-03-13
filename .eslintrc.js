@@ -11,7 +11,7 @@ module.exports = {
     sourceType: 'module',
     ecmaVersion: 2020,
   },
-  plugins: ['no-only-tests'],
+  plugins: ['no-only-tests', 'import'],
   rules: {
     'no-return-await': 0,
     'class-methods-use-this': 0,
@@ -21,6 +21,7 @@ module.exports = {
     'prefer-destructuring': 0,
     'no-param-reassign': ['error', { props: false }],
     'no-only-tests/no-only-tests': 'error',
+    'no-unused-vars': ['error', { args: 'none' }],
     'linebreak-style': 0,
     'import/no-anonymous-default-export': [
       'error',
@@ -89,7 +90,6 @@ module.exports = {
         '@typescript-eslint/explicit-module-boundary-types': 0,
         '@typescript-eslint/indent': 0,
         '@typescript-eslint/prefer-nullish-coalescing': 0,
-        '@typescript-eslint/explicit-function-return-type': 'warn',
 
         'implicit-arrow-linebreak': 0,
         'import/no-duplicates': 0,
@@ -122,28 +122,7 @@ module.exports = {
         'plugin:@angular-eslint/recommended',
         'plugin:@angular-eslint/template/process-inline-templates',
       ],
-      rules: {
-        '@typescript-eslint/member-ordering': [
-          'error',
-          {
-            default: {
-              memberTypes: [
-                'public-decorated-field',
-                'protected-decorated-field',
-                'private-decorated-field',
-                'public-decorated-method',
-                'protected-decorated-method',
-                'private-decorated-method',
-                'field',
-                'constructor',
-                'static-method',
-                'instance-method',
-                'abstract-method',
-              ],
-            },
-          },
-        ],
-      },
+      rules: {},
     },
     {
       files: ['*.html'],

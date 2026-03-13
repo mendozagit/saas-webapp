@@ -51,7 +51,7 @@ export class SideNavigationMenuComponent implements AfterViewInit, OnDestroy {
     });
 
     effect(() => {
-      const _ = this.selectedItem();
+      this.selectedItem();
       this.setSelectedItem();
     });
   }

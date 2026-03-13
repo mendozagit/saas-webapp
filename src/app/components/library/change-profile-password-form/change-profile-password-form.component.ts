@@ -41,7 +41,7 @@ export class ChangeProfilePasswordFormComponent {
   async onFieldChanged() {
     const formValues = Object.entries(this.formData);
 
-    this.isSaveDisabled.set(await (formValues.length != 3 || !!formValues.find(([_, value]) => !value) || !this.formPopup.isValid()));
+    this.isSaveDisabled.set(await (formValues.length != 3 || !!formValues.find(([, value]) => !value) || !this.formPopup.isValid()));
   }
 
   saveNewPassword(): void {

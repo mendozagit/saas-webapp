@@ -85,34 +85,18 @@ export class AuthService {
     }
   }
 
-  async changePassword(email: string, recoveryCode: string) {
-    try {
-      // Send request
-
-      return {
-        isOk: true,
-      };
-    } catch {
-      return {
-        isOk: false,
-        message: 'Failed to change password',
-      };
-    }
+  async changePassword(email: string, recoveryCode: string): Promise<IResponse> {
+    // Send request
+    return {
+      isOk: true,
+    };
   }
 
-  async resetPassword(email: string) {
-    try {
-      // Send request
-
-      return {
-        isOk: true,
-      };
-    } catch {
-      return {
-        isOk: false,
-        message: 'Failed to reset password',
-      };
-    }
+  async resetPassword(email: string): Promise<IResponse> {
+    // Send request
+    return {
+      isOk: true,
+    };
   }
 
   async logOut() {
