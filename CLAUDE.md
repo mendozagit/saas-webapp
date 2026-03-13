@@ -1,4 +1,4 @@
-# Project: DevExtreme UI Template Gallery (Angular)
+# Project: SaaS web app (Angular)
 
 ## Persona
 

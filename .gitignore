@@ -7,7 +7,6 @@ yarn-error.log*
 
 # Dependencies
 node_modules/
-jspm_packages/
 
 # Output
 *.tgz
@@ -15,7 +14,6 @@ jspm_packages/
 /dist
 /tmp
 /out-tsc
-/bazel-out
 build
 
 # Profiling
@@ -34,18 +32,12 @@ chrome-profiler-events*.json
 # VSCode
 .vscode/*
 !.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
 !.vscode/extensions.json
 
 # Angular
 /.angular/cache
 /.sass-cache
-/connect.lock
 /coverage
-/libpeerconnection.log
-testem.log
-/typings
 
 # System
 .DS_Store

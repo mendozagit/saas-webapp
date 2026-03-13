@@ -6,12 +6,13 @@ $theme-mode: null !default;
 @use "theme-special" as * with ($theme: "fluent");
 @use "sass:math";
 @use "sass:color";
+@use "sass:meta";
 
 :root {
-  --dark-warning-color: #{darken(adjust-hue($base-warning, -12), 3.73)};
+  --dark-warning-color: #{color.adjust(color.adjust($base-warning, $hue: -12deg), $lightness: -3.73%)};
   --typography-bg: var(--base-bg);
 
-  @if variable-exists("base-typography-bg") {
+  @if meta.variable-exists("base-typography-bg") {
     --typography-bg: var(--dx-color-main-bg);
   }
 
@@ -23,8 +24,8 @@ $theme-mode: null !default;
   --toolbar-vertical-padding: 16px;
   --toolbar-margin-bottom: var(--content-padding);
   --base-bg: var(--dx-component-color-bg);
-  --base-bg-darken-5: #{darken($base-bg, 5)};
-  --base-bg-darken-4: #{darken($base-bg, 4)};
+  --base-bg-darken-5: #{color.adjust($base-bg, $lightness: -5%)};
+  --base-bg-darken-4: #{color.adjust($base-bg, $lightness: -4%)};
   --side-panel-background: var(--base-bg-darken-5);
   --card-background: var(--base-bg);
   --calendar-width: 292px;

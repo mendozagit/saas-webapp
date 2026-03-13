@@ -1,4 +1,4 @@
-import { enableProdMode, importProvidersFrom } from '@angular/core';
+import { enableProdMode, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
 import { bootstrapApplication } from "@angular/platform-browser";
 import {
   AppInfoService,
@@ -22,6 +22,7 @@ if (environment.production) {
 themes.initialized(() => {
   bootstrapApplication(AppComponent, {
     providers: [
+      provideZoneChangeDetection(),
       AuthService,
       ScreenService,
       AppInfoService,
