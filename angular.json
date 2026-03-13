@@ -63,11 +63,11 @@
               "src/styles.scss",
               "devexpress-gantt/dist/dx-gantt.css",
               {
-                "input": "devextreme/scss/bundles/dx.fluent.blue.light.scss",
+                "input": "devextreme/dist/css/dx.fluent.blue.light.css",
                 "bundleName": "theme-light"
               },
               {
-                "input": "devextreme/scss/bundles/dx.fluent.blue.dark.scss",
+                "input": "devextreme/dist/css/dx.fluent.blue.dark.css",
                 "bundleName": "theme-dark"
               },
               {

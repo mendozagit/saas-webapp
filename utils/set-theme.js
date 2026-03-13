@@ -42,7 +42,7 @@ function setCssThemeImports(fileForChange, baseBundleName, isCompact) {
     fileForChange,
     readFileSync(fileForChange, 'utf8')
       .replace(
-        /(scss\/bundles\/dx\.)(.+\.){0,2}(dark|light)(\.compact)?(\.scss)?/g,
+        /(dist\/css\/dx\.)(.+\.){0,2}(dark|light)(\.compact)?(\.css)?/g,
         `$1${baseBundleName}$3${isCompact ? '.compact' : ''}$5`,
       ),
   );
