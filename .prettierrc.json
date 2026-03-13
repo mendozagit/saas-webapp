@@ -1,0 +1,15 @@
+{
+    "tabWidth": 2,
+    "htmlWhitespaceSensitivity": "strict",
+    "overrides": [
+        {
+            "files": [
+                "src/**/*.component.html"
+            ],
+            "options": {
+                "printWidth": 80
+            }
+        }
+    ],
+    "singleQuote": true
+}
