@@ -1,11 +1,12 @@
 import {
+  ChangeDetectionStrategy,
   Component,
-  EventEmitter,
-  Input,
-  Output,
+  model,
+  input,
+  output,
+  signal,
   ViewChild,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import {
   DxSelectBoxModule,
   DxTextBoxModule,
@@ -18,37 +19,34 @@ import { ValidationRule, EditorStyle } from 'devextreme-angular/common';
   selector: 'password-text-box',
   templateUrl: 'password-text-box.component.html',
   styles: [],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DxSelectBoxModule,
     DxTextBoxModule,
     DxValidatorModule,
-    CommonModule
   ]
 })
 export class PasswordTextBoxComponent {
   @ViewChild('validator', { static: true }) validator: DxValidatorComponent;
 
-  @Input() value: string;
+  readonly value = model<string>();
 
-  @Input() placeholder = '';
+  readonly placeholder = input('');
 
-  @Input() stylingMode: EditorStyle = 'outlined';
+  readonly stylingMode = input<EditorStyle>('outlined');
 
-  @Input() validators: ValidationRule[] = [];
+  readonly validators = input<ValidationRule[]>([]);
 
-  @Output() valueChange = new EventEmitter<string>();
+  readonly valueChanged = output<string>();
 
-  @Output() valueChanged = new EventEmitter<string>();
-
-  isPasswordMode = true;
+  readonly isPasswordMode = signal(true);
 
   switchMode = () => {
-    this.isPasswordMode = !this.isPasswordMode;
+    this.isPasswordMode.update(v => !v);
   }
 
-  onValueChange(value) {
-    this.value = value;
-    this.valueChange.emit(value);
+  onValueChange(value: string) {
+    this.value.set(value);
     this.valueChanged.emit(value);
   }
 

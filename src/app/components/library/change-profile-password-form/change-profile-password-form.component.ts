@@ -1,5 +1,4 @@
-import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, model, signal, ViewChild } from '@angular/core';
 import { DxFormModule } from 'devextreme-angular/ui/form';
 import { DxLoadIndicatorModule } from 'devextreme-angular/ui/load-indicator';
 import notify from 'devextreme/ui/notify';
@@ -12,8 +11,8 @@ import { FormPopupComponent } from 'src/app/components/utils/form-popup/form-pop
   selector: 'change-profile-password-form',
   templateUrl: './change-profile-password-form.component.html',
   styleUrls: ['./change-profile-password-form.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     DxFormModule,
     DxLoadIndicatorModule,
     PasswordTextBoxComponent,
@@ -25,11 +24,9 @@ export class ChangeProfilePasswordFormComponent {
 
   @ViewChild('confirmField', { static: true }) confirmField: PasswordTextBoxComponent;
 
-  @Input() visible = false;
+  readonly visible = model(false);
 
-  @Output() visibleChange = new EventEmitter<boolean>();
-
-  isSaveDisabled = true;
+  readonly isSaveDisabled = signal(true);
 
   formData: Record<string, any> = {};
 
@@ -44,7 +41,7 @@ export class ChangeProfilePasswordFormComponent {
   async onFieldChanged() {
     const formValues = Object.entries(this.formData);
 
-    this.isSaveDisabled =  await (formValues.length != 3 || !!formValues.find(([_, value]) => !value) || !this.formPopup.isValid());
+    this.isSaveDisabled.set(await (formValues.length != 3 || !!formValues.find(([_, value]) => !value) || !this.formPopup.isValid()));
   }
 
   saveNewPassword(): void {
@@ -61,7 +58,6 @@ export class ChangeProfilePasswordFormComponent {
   }
 
   changeVisible(visible: boolean): void {
-    this.visible = visible;
-    this.visibleChange.emit(this.visible);
+    this.visible.set(visible);
   }
 }

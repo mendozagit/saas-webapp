@@ -1,5 +1,4 @@
-import { Component, EventEmitter, Output, Input, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, effect, input, output, signal } from '@angular/core';
 import { DxButtonModule, DxCheckBoxModule } from 'devextreme-angular';
 import { DxListModule } from 'devextreme-angular/ui/list';
 
@@ -7,29 +6,32 @@ import { DxListModule } from 'devextreme-angular/ui/list';
   selector: 'calendar-list',
   templateUrl: './calendar-list.component.html',
   styleUrls: ['./calendar-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DxListModule,
     DxCheckBoxModule,
     DxButtonModule,
-    CommonModule
   ],
 })
-export class CalendarListComponent implements OnInit {
-  @Input() dataSource: Record<string, any>[];
+export class CalendarListComponent {
+  readonly dataSource = input<Record<string, any>[]>();
 
-  @Output() listSelectionChanged = new EventEmitter<any>();
+  readonly listSelectionChanged = output<any>();
 
-  selectedItems = [];
+  readonly selectedItems = signal<any[]>([]);
 
-  constructor() {}
-
-  ngOnInit() {
-    this.selectedItems = [...this.dataSource.flatMap((el) => el.items)];
+  constructor() {
+    effect(() => {
+      const ds = this.dataSource();
+      if (ds) {
+        this.selectedItems.set([...ds.flatMap((el) => el.items)]);
+      }
+    });
   }
 
-  selectionChanged(item, isSelected) {
-    const selected = this.selectedItems;
-    this.selectedItems = isSelected ? [...selected, item] :  selected.filter((el) => el !== item);
-    this.listSelectionChanged.emit(this.selectedItems);
+  selectionChanged(item: unknown, isSelected: boolean) {
+    const selected = this.selectedItems();
+    this.selectedItems.set(isSelected ? [...selected, item] : selected.filter((el) => el !== item));
+    this.listSelectionChanged.emit(this.selectedItems());
   }
 }

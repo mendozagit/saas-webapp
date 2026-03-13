@@ -1,9 +1,11 @@
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   inject,
+  signal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { forkJoin } from 'rxjs';
 
 import notify from 'devextreme/ui/notify';
@@ -31,6 +33,7 @@ import { DataService, ScreenService } from 'src/app/services';
 @Component({
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ DataService ],
   imports: [
     DxButtonModule,
@@ -46,7 +49,7 @@ import { DataService, ScreenService } from 'src/app/services';
     FormPhotoComponent,
     ProfileCardComponent,
     ChangeProfilePasswordFormComponent,
-    CommonModule,
+    AsyncPipe,
     PhonePipeDirective,
   ]
 })
@@ -59,19 +62,19 @@ export class UserProfileComponent {
 
   profileId = 22;
 
-  profileData: Record<string, any>;
+  profileData = signal<Record<string, any>>(undefined);
 
   savedProfileData: Record<string, any>;
 
-  isLoading = true;
+  isLoading = signal(true);
 
-  supervisorsList = [];
+  supervisorsList: unknown[] = [];
 
-  isChangePasswordPopupOpened = false;
+  isChangePasswordPopupOpened = signal(false);
 
-  isDataChanged = false;
+  isDataChanged = signal(false);
 
-  isContentScrolled = false;
+  isContentScrolled = signal(false);
 
   basicInfoItems: Record<string, any>[] = this.getBasicInfoItems();
 
@@ -86,9 +89,9 @@ export class UserProfileComponent {
     ]).subscribe(([supervisorsList, profileData]) => {
       this.supervisorsList.length = 0;
       this.supervisorsList.push(...supervisorsList);
-      this.profileData = profileData;
+      this.profileData.set(profileData);
       this.setSavedData();
-      this.isLoading = false;
+      this.isLoading.set(false);
     });
   }
 
@@ -188,47 +191,47 @@ export class UserProfileComponent {
   }
 
   dataChanged() {
-    this.isDataChanged = true;
+    this.isDataChanged.set(true);
   }
 
-  setSavedData(data = this.profileData) {
+  setSavedData(data = this.profileData()) {
     this.savedProfileData = JSON.parse(JSON.stringify(data));
   }
 
-  copyToClipboard(text, evt) {
+  copyToClipboard(text: any, evt: any) {
     window.navigator.clipboard?.writeText(text);
     const tipText = 'Text copied';
     notify({
-        message: tipText,
-        minWidth: `${tipText.length + 2}ch`,
-        width: 'auto',
-        position: {of: evt.target, offset:'0 -30'}
-      },
-      'info', 500);
-  };
+      message: tipText,
+      minWidth: `${tipText.length + 2}ch`,
+      width: 'auto',
+      position: {of: evt.target, offset:'0 -30'}
+    },
+    'info', 500);
+  }
 
   changePassword() {
-    this.isChangePasswordPopupOpened = true;
-  };
+    this.isChangePasswordPopupOpened.set(true);
+  }
 
   cancel() {
-    this.profileData = this.savedProfileData;
+    this.profileData.set(this.savedProfileData);
     this.ref.detectChanges();
     this.setSavedData();
 
     setTimeout(() => {
-      this.isDataChanged = false;
+      this.isDataChanged.set(false);
     });
   }
 
   save() {
     notify({message: 'Data saved', position: {at: 'bottom center', my: 'bottom center'}}, 'success');
-    this.isDataChanged = false;
+    this.isDataChanged.set(false);
     this.setSavedData();
   }
 
   scroll({reachedTop = false}) {
-    this.isContentScrolled = !reachedTop;
+    this.isContentScrolled.set(!reachedTop);
   }
 }
 

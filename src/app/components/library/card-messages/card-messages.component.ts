@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import {
   DxTextAreaModule,
   DxTextBoxModule,
@@ -25,13 +25,14 @@ import { UserAvatarComponent } from 'src/app/components/library/user-avatar/user
     DxValidationGroupModule,
     DxValidatorModule,
     UserAvatarComponent,
-    CommonModule,
-  ]
+    DatePipe,
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CardMessagesComponent {
-  @Input() user: string;
+  readonly user = input<string>();
 
-  @Input() items: Messages;
+  readonly items = input<Messages>();
 
   messageTitle = '';
 
@@ -42,23 +43,25 @@ export class CardMessagesComponent {
   }
 
   getText(data: Message) {
-    return data.text.replace('{username}',  data.manager !== this.items[0].manager ? this.items[0].manager : this.items[1].manager);
+    const items = this.items()!;
+    return data.text.replace('{username}',  data.manager !== items[0].manager ? items[0].manager : items[1].manager);
   }
 
-  send = (e) => {
-    if (!e.validationGroup.validate().isValid) {
+  send = (e: unknown) => {
+    const event = e as { validationGroup: { validate: () => { isValid: boolean }; reset: () => void } };
+    if (!event.validationGroup.validate().isValid) {
       return;
     }
 
     const newMessage: Message = {
       subject: this.messageTitle,
       text: this.messageText,
-      manager: this.user,
+      manager: this.user()!,
       date: new Date(),
     };
 
-    this.items.push(newMessage);
+    this.items()!.push(newMessage);
 
-    e.validationGroup.reset();
+    event.validationGroup.reset();
   };
 }

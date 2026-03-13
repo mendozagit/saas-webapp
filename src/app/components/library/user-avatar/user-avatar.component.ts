@@ -1,12 +1,12 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 @Component({
   selector: 'user-avatar',
   templateUrl: './user-avatar.component.html',
   styleUrls: ['./user-avatar.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-
 export class UserAvatarComponent {
-  @Input() dataLetters: string | null;
+  readonly dataLetters = input<string | null>();
 }
 

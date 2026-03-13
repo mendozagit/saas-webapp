@@ -1,12 +1,13 @@
 import {
+  ChangeDetectionStrategy,
   Component,
-  Input,
+  input,
+  model,
+  output,
   ViewChild,
-  Output,
-  EventEmitter,
   inject,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import {
   DxButtonModule,
   DxToolbarModule,
@@ -18,37 +19,36 @@ import { ScreenService } from 'src/app/services';
 import { ApplyPipeDirective } from 'src/app/pipes/apply.pipe';
 
 @Component({
-    selector: 'form-popup',
-    templateUrl: './form-popup.component.html',
-    styleUrls: ['./form-popup.component.scss'],
-    imports: [
-      ApplyPipeDirective,
-      DxButtonModule,
-      DxToolbarModule,
-      DxPopupModule,
-      DxValidationGroupModule,
-      CommonModule,
-    ],
+  selector: 'form-popup',
+  templateUrl: './form-popup.component.html',
+  styleUrls: ['./form-popup.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    ApplyPipeDirective,
+    DxButtonModule,
+    DxToolbarModule,
+    DxPopupModule,
+    DxValidationGroupModule,
+    AsyncPipe,
+  ],
 })
 
 export class FormPopupComponent {
   @ViewChild('validationGroup', { static: true }) validationGroup: DxValidationGroupComponent;
 
-  @Input() titleText = '';
+  readonly titleText = input('');
 
-  @Input() width = 480;
+  readonly width = input(480);
 
-  @Input() height: string | number = 'auto';
+  readonly height = input<string | number>('auto');
 
-  @Input() wrapperAttr: Record<string, string> = {};
+  readonly wrapperAttr = input<Record<string, string>>({});
 
-  @Input() visible = false;
+  readonly visible = model(false);
 
-  @Input() isSaveDisabled = false;
+  readonly isSaveDisabled = input(false);
 
-  @Output() save = new EventEmitter();
-
-  @Output() visibleChange = new EventEmitter<boolean>();
+  readonly save = output();
 
   protected screen = inject(ScreenService);
 
@@ -67,9 +67,7 @@ export class FormPopupComponent {
 
   close() {
     this.validationGroup.instance.reset();
-    this.visible = false;
-
-    this.visibleChange.emit(this.visible);
+    this.visible.set(false);
   }
 
   getWrapperAttrs = (inputWrapperAttr) => {

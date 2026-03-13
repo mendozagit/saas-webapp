@@ -1,25 +1,27 @@
 import {
-  Component, EventEmitter, Input, Output,
+  ChangeDetectionStrategy,
+  Component,
+  input,
+  output,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { DxSelectBoxModule, DxTextBoxModule } from 'devextreme-angular';
 
 @Component({
   selector: 'pictured-item-select-box',
   templateUrl: 'pictured-item-select-box.component.html',
   styleUrls: ['./pictured-item-select-box.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DxSelectBoxModule,
     DxTextBoxModule,
-    CommonModule,
   ],
 })
 export class PicturedItemSelectBoxComponent {
-  @Input() value: Record<string, unknown>;
+  readonly value = input<Record<string, unknown>>();
 
-  @Input() label = '';
+  readonly label = input('');
 
-  @Input() items: Record<string, unknown>[] = [];
+  readonly items = input<Record<string, unknown>[]>([]);
 
-  @Output() valueChange = new EventEmitter<string>();
+  readonly valueChange = output<string>();
 }

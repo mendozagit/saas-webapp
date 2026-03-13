@@ -1,13 +1,12 @@
-import { enableProdMode, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
+import { enableProdMode, provideZoneChangeDetection } from '@angular/core';
 import { bootstrapApplication } from "@angular/platform-browser";
 import {
   AppInfoService,
   AuthGuardService,
   AuthService,
-  ScreenService,
   ThemeService
 } from "./app/services";
-import { HttpClientModule, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
+import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import { provideRouter, withHashLocation } from "@angular/router";
 
 import themes from 'devextreme/ui/themes';
@@ -24,11 +23,9 @@ themes.initialized(() => {
     providers: [
       provideZoneChangeDetection(),
       AuthService,
-      ScreenService,
       AppInfoService,
       ThemeService,
       AuthGuardService,
-      importProvidersFrom(HttpClientModule),
       provideHttpClient(withInterceptorsFromDi()),
       provideRouter(routes, withHashLocation()),
     ]

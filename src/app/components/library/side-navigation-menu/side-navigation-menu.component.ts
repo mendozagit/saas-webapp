@@ -1,8 +1,9 @@
 import {
+  ChangeDetectionStrategy,
   Component,
-  Output,
-  Input,
-  EventEmitter,
+  output,
+  input,
+  effect,
   ViewChild,
   ElementRef,
   AfterViewInit,
@@ -17,54 +18,43 @@ import { navigation } from '../../../app-navigation';
   selector: 'side-navigation-menu',
   templateUrl: './side-navigation-menu.component.html',
   styleUrls: ['./side-navigation-menu.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ DxTreeViewModule ],
 })
 export class SideNavigationMenuComponent implements AfterViewInit, OnDestroy {
   @ViewChild(DxTreeViewComponent, { static: true })
-  menu!: DxTreeViewComponent;
+    menu!: DxTreeViewComponent;
 
-  @Output()
-  selectedItemChanged = new EventEmitter<DxTreeViewTypes.ItemClickEvent>();
+  readonly selectedItemChanged = output<DxTreeViewTypes.ItemClickEvent>();
 
-  @Output()
-  openMenu = new EventEmitter<any>();
+  readonly openMenu = output<any>();
 
-  @Input()
-  get compactMode() {
-    return this._compactMode;
-  }
+  readonly compactMode = input(false);
 
-  @Input()
-  set selectedItem(value: String) {
-    this._selectedItem = value;
-    this.setSelectedItem();
-  }
+  readonly selectedItem = input<String>();
 
-  get selectedItem(): String {
-    return this._selectedItem;
-  }
-
-  set compactMode(val) {
-    this._compactMode = val;
-
-    if (!this.menu.instance) {
-      return;
-    }
-
-    if (val) {
-      this.menu.instance.collapseAll();
-    } else {
-      this.menu.instance.expandItem(this._selectedItem);
-    }
-  }
-
-  private _selectedItem!: String;
-
-  private _items!: Record <string, unknown>[];
-
-  private _compactMode = false;
+  private _items!: Record<string, unknown>[];
 
   private elementRef = inject(ElementRef);
+
+  constructor() {
+    effect(() => {
+      const val = this.compactMode();
+      if (!this.menu?.instance) {
+        return;
+      }
+      if (val) {
+        this.menu.instance.collapseAll();
+      } else {
+        this.menu.instance.expandItem(this.selectedItem());
+      }
+    });
+
+    effect(() => {
+      const _ = this.selectedItem();
+      this.setSelectedItem();
+    });
+  }
 
   get items() {
     if (!this._items) {
@@ -72,7 +62,7 @@ export class SideNavigationMenuComponent implements AfterViewInit, OnDestroy {
         if (item.path && !(/^\//.test(item.path))) {
           item.path = `/${item.path}`;
         }
-        return { ...item, expanded: !this._compactMode };
+        return { ...item, expanded: !this.compactMode() };
       });
     }
 
@@ -80,11 +70,11 @@ export class SideNavigationMenuComponent implements AfterViewInit, OnDestroy {
   }
 
   setSelectedItem() {
-    if (!this.menu.instance) {
+    if (!this.menu?.instance) {
       return;
     }
 
-    this.menu.instance.selectItem(this.selectedItem);
+    this.menu.instance.selectItem(this.selectedItem());
   }
 
   onItemClick(event: DxTreeViewTypes.ItemClickEvent) {
@@ -94,7 +84,7 @@ export class SideNavigationMenuComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     this.setSelectedItem();
     events.on(this.elementRef.nativeElement, 'dxclick', (e: Event) => {
-      this.openMenu.next(e);
+      this.openMenu.emit(e);
     });
   }
 
@@ -102,4 +92,3 @@ export class SideNavigationMenuComponent implements AfterViewInit, OnDestroy {
     events.off(this.elementRef.nativeElement, 'dxclick');
   }
 }
-

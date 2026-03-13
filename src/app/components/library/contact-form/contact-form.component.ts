@@ -1,5 +1,4 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
 import {
   DxButtonModule,
   DxFormModule,
@@ -25,6 +24,7 @@ import { US_STATES } from 'src/app/shared/constants';
   selector: 'contact-form',
   templateUrl: './contact-form.component.html',
   styleUrls: ['./contact-form.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DxFormModule,
     DxSelectBoxModule,
@@ -37,36 +37,35 @@ import { US_STATES } from 'src/app/shared/constants';
     FormPhotoComponent,
     DxValidatorModule,
     ToolbarFormComponent,
-    CommonModule,
     StatusSelectBoxComponent,
   ]
 })
 export class ContactFormComponent {
-  @Input() contactData: Contact;
+  readonly contactData = input<Contact>();
 
-  @Input() isLoading: boolean;
+  readonly isLoading = input(false);
 
   savedData: Contact = null;
 
-  isEditing = false;
+  readonly isEditing = signal(false);
 
   zipCodeValidator: ValidationRule = { type: 'pattern', pattern: /^\d{5}$/, message: 'Zip is invalid' };
 
   usStates = US_STATES;
 
   handleEditClick() {
-    this.savedData = { ...this.contactData };
-    this.isEditing = true;
+    this.savedData = { ...this.contactData() };
+    this.isEditing.set(true);
   }
 
   handleSaveClick({ validationGroup }: DxButtonTypes.ClickEvent) {
     if(!validationGroup.validate().isValid) return;
-    this.isEditing = false;
+    this.isEditing.set(false);
     this.savedData = null;
   }
 
   handleCancelClick() {
-    this.contactData = { ...this.savedData };
-    this.isEditing = false;
+    Object.assign(this.contactData(), this.savedData);
+    this.isEditing.set(false);
   }
 }

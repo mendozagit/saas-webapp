@@ -2,7 +2,7 @@
   <dx-vector-map id="vector-map" [bounds]="[-118, 50, -80, 25]">
     <dxi-layer [dataSource]="usaMap" [hoverEnabled]="false"></dxi-layer>
     <dxi-layer
-      [dataSource]="data"
+      [dataSource]="data()"
       [minSize]="20"
       [maxSize]="40"
       [sizeGroups]="[0, 80000, 100000, 400000, 500000]"

@@ -1,8 +1,6 @@
-import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { RouterModule, Router } from '@angular/router';
 import { SingleCardComponent } from 'src/app/layouts';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-unauthenticated-content',
@@ -17,8 +15,8 @@ import { Router } from '@angular/router';
       height: 100%;
     }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     RouterModule,
     SingleCardComponent,
   ],

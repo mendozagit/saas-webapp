@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import {
   DxTextAreaModule,
   DxToolbarModule,
@@ -21,28 +21,29 @@ import { Notes, Note } from 'src/app/types/notes';
     DxValidationGroupModule,
     DxValidatorModule,
     DxScrollViewModule,
-    CommonModule,
-  ]
+    DatePipe,
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CardNotesComponent {
-  @Input() user: string;
+  readonly user = input<string>();
 
-  @Input() items: Notes;
+  readonly items = input<Notes>();
 
   nodeText = '';
 
-  add = (e) => {
+  add = (e: { validationGroup: { validate: () => { isValid: boolean }; reset: () => void } }) => {
     if (!e.validationGroup.validate().isValid) {
       return;
     }
 
     const newNote: Note = {
-      manager: this.user,
+      manager: this.user()!,
       date: new Date(),
       text: this.nodeText,
     };
 
-    this.items.push(newNote);
+    this.items()!.push(newNote);
 
     e.validationGroup.reset();
   };

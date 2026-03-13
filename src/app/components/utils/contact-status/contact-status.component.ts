@@ -1,18 +1,19 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { LowerCasePipe } from '@angular/common';
 import { ContactStatus } from 'src/app/types/contact';
 
 @Component({
   selector: 'contact-status',
   template: `
-    <span class="status status-{{ value | lowercase }}">{{ showText ? value : '' }}</span>
+    <span class="status status-{{ value() | lowercase }}">{{ showText() ? value() : '' }}</span>
   `,
   styleUrls: ['./contact-status.component.scss'],
-  imports: [ CommonModule ],
+  imports: [ LowerCasePipe ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContactStatusComponent {
-  @Input() value: ContactStatus;
+  readonly value = input<ContactStatus>();
 
-  @Input() showText = true;
+  readonly showText = input(true);
 }
 

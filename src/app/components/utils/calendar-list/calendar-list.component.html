@@ -1,6 +1,6 @@
 <dx-list
   class="calendar-list"
-  [dataSource]="dataSource"
+  [dataSource]="dataSource()"
   [activeStateEnabled]="false"
   [focusStateEnabled]="false"
   [hoverStateEnabled]="false"
@@ -17,7 +17,7 @@
   <div *dxTemplate="let item of 'item'">
     <div class="list-item">
       <dx-check-box
-        [value]="selectedItems.includes(item)"
+        [value]="selectedItems().includes(item)"
         [focusStateEnabled]="false"
         (onValueChanged)="selectionChanged(item, $event.value)"
       ></dx-check-box>

@@ -1,5 +1,4 @@
-import { Component, Input, ViewChild, ElementRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, input, ViewChild, ElementRef } from '@angular/core';
 
 import { DxListModule, DxListTypes } from 'devextreme-angular/ui/list';
 import { IUser } from '../../../services/auth.service';
@@ -8,18 +7,15 @@ import { IUser } from '../../../services/auth.service';
   selector: 'user-menu-section',
   templateUrl: 'user-menu-section.component.html',
   styleUrls: ['./user-menu-section.component.scss'],
-  imports: [ DxListModule,  CommonModule ]
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [ DxListModule ]
 })
-
 export class UserMenuSectionComponent {
-  @Input()
-  menuItems: any;
+  readonly menuItems = input<any>();
 
-  @Input()
-  showAvatar!: boolean;
+  readonly showAvatar = input.required<boolean>();
 
-  @Input()
-  user!: IUser | null;
+  readonly user = input.required<IUser | null>();
 
   @ViewChild('userInfoList', { read: ElementRef }) userInfoList: ElementRef<HTMLElement>;
 

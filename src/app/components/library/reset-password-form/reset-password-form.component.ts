@@ -1,5 +1,4 @@
-import { CommonModule } from '@angular/common';
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, OnInit, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { DxFormModule } from 'devextreme-angular/ui/form';
 import { DxLoadIndicatorModule } from 'devextreme-angular/ui/load-indicator';
@@ -12,17 +11,17 @@ const notificationText = 'We\'ve sent a link to reset your password. Check your 
   selector: 'reset-password-form',
   templateUrl: './reset-password-form.component.html',
   styleUrls: ['./reset-password-form.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     RouterModule,
     DxFormModule,
     DxLoadIndicatorModule,
   ]
 })
 export class ResetPasswordFormComponent implements OnInit {
-  @Input() signInLink = '/auth/sign-in';
+  readonly signInLink = input('/auth/sign-in');
 
-  @Input() buttonLink = '/auth/sign-in';
+  readonly buttonLink = input('/auth/sign-in');
 
   private authService = inject(AuthService);
 
@@ -30,20 +29,20 @@ export class ResetPasswordFormComponent implements OnInit {
 
   defaultAuthData: IResponse;
 
-  loading = false;
+  readonly loading = signal(false);
 
   formData: any = {};
 
   async onSubmit(e: Event) {
     e.preventDefault();
     const { email } = this.formData;
-    this.loading = true;
+    this.loading.set(true);
 
     const result = await this.authService.resetPassword(email);
-    this.loading = false;
+    this.loading.set(false);
 
     if (result.isOk) {
-      this.router.navigate([this.buttonLink]);
+      this.router.navigate([this.buttonLink()]);
       notify(notificationText, 'success', 2500);
     } else {
       notify(result.message, 'error', 2000);

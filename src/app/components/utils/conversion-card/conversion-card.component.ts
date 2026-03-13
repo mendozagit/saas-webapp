@@ -1,5 +1,4 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { CardAnalyticsComponent } from 'src/app/components/library/card-analytics/card-analytics.component';
 import { DxFunnelModule } from 'devextreme-angular/ui/funnel';
 import { SalesOrOpportunitiesByCategory } from 'src/app/types/analytics';
@@ -7,14 +6,14 @@ import { SalesOrOpportunitiesByCategory } from 'src/app/types/analytics';
 @Component({
   selector: 'conversion-card',
   templateUrl: 'conversion-card.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     CardAnalyticsComponent,
     DxFunnelModule,
   ],
 })
 export class ConversionCardComponent {
-  @Input() data: SalesOrOpportunitiesByCategory;
+  readonly data = input<SalesOrOpportunitiesByCategory>();
 
   customizeOppText(arg: { valueText: string }) {
     return `$${arg.valueText}`;

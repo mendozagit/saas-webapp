@@ -1,12 +1,12 @@
 import {
+  ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   inject,
-  Input,
-  Output,
+  input,
+  output,
   ViewChild
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import {
   DxButtonModule,
   DxDateBoxModule,
@@ -31,6 +31,7 @@ type CardData = Record<string, any>;
   selector: 'profile-card',
   templateUrl: './profile-card.component.html',
   styleUrls: ['profile-card.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ApplyPipeDirective,
     DxButtonModule,
@@ -42,7 +43,7 @@ type CardData = Record<string, any>;
     DxScrollViewModule,
     DxTextBoxModule,
     DxValidatorModule,
-    CommonModule,
+    AsyncPipe,
     PicturedItemSelectBoxComponent,
     StatusSelectBoxComponent,
   ],
@@ -50,15 +51,15 @@ type CardData = Record<string, any>;
 export class ProfileCardComponent {
   @ViewChild('form', { static: true }) form: DxFormComponent;
 
-  @Input() items: Record<string, any>[] = [];
+  readonly items = input<Record<string, any>[]>([]);
 
-  @Input() colCount: number = 2;
+  readonly colCount = input(2);
 
-  @Input() title: string = '';
+  readonly title = input('');
 
-  @Output() dataChanged = new EventEmitter<any>();
+  readonly dataChanged = output<any>();
 
-  @Input() cardData: CardData;
+  readonly cardData = input<CardData>();
 
   getSizeQualifier = getSizeQualifier;
 
@@ -74,9 +75,9 @@ export class ProfileCardComponent {
     }
 
     if (fieldName) {
-      this.cardData[fieldName] = value;
+      this.cardData()[fieldName] = value;
     }
 
-    this.dataChanged.emit(this.cardData);
+    this.dataChanged.emit(this.cardData());
   }
 }

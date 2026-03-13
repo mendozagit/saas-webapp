@@ -1,5 +1,5 @@
 <div class="view-wrapper">
-  <dx-toolbar class="theme-dependent" [class.scrolled]="isContentScrolled">
+  <dx-toolbar class="theme-dependent" [class.scrolled]="isContentScrolled()">
     <dxi-item location="before">
       <div class="header-text">User Profile</div>
     </dxi-item>
@@ -8,14 +8,14 @@
         text="Cancel"
         stylingMode="outlined"
         type="normal"
-        [disabled]="!isDataChanged"
+        [disabled]="!isDataChanged()"
         (onClick)="cancel()"
       >
       </dx-button>
     </dxi-item>
     <dxi-item location="after" locateInMenu="never">
       <dx-button
-        [disabled]="!isDataChanged"
+        [disabled]="!isDataChanged()"
         text="Save"
         icon="save"
         type="default"
@@ -28,31 +28,32 @@
 
   <dx-load-panel
     container=".view-wrapper-scroll"
-    [visible]="isLoading"
+    [visible]="isLoading()"
     [showPane]="false"
     [position]="{ of: 'user-profile' }"
   >
   </dx-load-panel>
   <dx-scroll-view class="view-wrapper-scroll" (onScroll)="scroll($event)">
-    <div *ngIf="!isLoading" class="cards-container">
+    @if (!isLoading()) {
+    <div class="cards-container">
       <profile-card
         class="profile-card basic-info-card"
         title="Basic Info"
         [colCount]="4"
-        [cardData]="profileData"
+        [cardData]="profileData()"
         [items]="basicInfoItems"
         (dataChanged)="dataChanged()"
       >
         <div class="basic-info-top-item" top-item>
           <form-photo
-            [link]="profileData?.image"
+            [link]="profileData()?.['image']"
             [editable]="true"
             [size]="80"
           ></form-photo>
           <div>
-            <div class="title-text">{{ profileData.name }}</div>
+            <div class="title-text">{{ profileData()['name'] }}</div>
             <div class="subtitle-text with-clipboard-copy">
-              <span>ID: {{ profileData.id }}</span>
+              <span>ID: {{ profileData()['id'] }}</span>
               <dx-button
                 icon="copy"
                 class="copy-clipboard-button"
@@ -60,7 +61,7 @@
                 [activeStateEnabled]="false"
                 [focusStateEnabled]="false"
                 [hoverStateEnabled]="false"
-                (onClick)="copyToClipboard(profileData.id, $event)"
+                (onClick)="copyToClipboard(profileData()['id'], $event)"
               ></dx-button>
             </div>
             <dx-button
@@ -77,7 +78,7 @@
       <profile-card
         class="profile-card contacts-card"
         title="Contacts"
-        [cardData]="profileData"
+        [cardData]="profileData()"
         [items]="contactItems"
         (dataChanged)="dataChanged()"
       >
@@ -86,9 +87,9 @@
             <i class="dx-icon dx-icon-mention"></i>
           </div>
           <div>
-            <div class="title-text">{{ profileData.phone | phone }}</div>
+            <div class="title-text">{{ profileData()['phone'] | phone }}</div>
             <div class="subtitle-text with-clipboard-copy">
-              {{ profileData.email }}
+              {{ profileData()['email'] }}
               <dx-button
                 icon="copy"
                 class="copy-clipboard-button"
@@ -96,7 +97,7 @@
                 [activeStateEnabled]="false"
                 [focusStateEnabled]="false"
                 [hoverStateEnabled]="false"
-                (onClick)="copyToClipboard(profileData.email, $event)"
+                (onClick)="copyToClipboard(profileData()['email'], $event)"
               ></dx-button>
             </div>
           </div>
@@ -106,7 +107,7 @@
       <profile-card
         class="profile-card address-card"
         title="Address"
-        [cardData]="profileData"
+        [cardData]="profileData()"
         [items]="addressItems"
         (dataChanged)="dataChanged()"
       >
@@ -116,13 +117,14 @@
           </div>
           <div>
             <div class="title-text">
-              {{ profileData.address }}, {{ profileData.city }},
-              {{ profileData.state }}, {{ profileData.country }}
+              {{ profileData()['address'] }}, {{ profileData()['city'] }},
+              {{ profileData()['state'] }}, {{ profileData()['country'] }}
             </div>
           </div>
         </div>
       </profile-card>
     </div>
+    }
   </dx-scroll-view>
 </div>
 

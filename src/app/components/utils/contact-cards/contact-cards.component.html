@@ -5,26 +5,26 @@
     [showNavButtons]="true"
   >
     <dxi-item title="Tasks">
-      <card-tasks [tasks]="tasks" [isLoading]="isLoading"></card-tasks>
+      <card-tasks [tasks]="tasks()" [isLoading]="isLoading()"></card-tasks>
     </dxi-item>
     <dxi-item title="Activities">
       <card-activities
-        [activities]="activities"
+        [activities]="activities()"
         [showBy]="true"
-        [isLoading]="isLoading"
+        [isLoading]="isLoading()"
       ></card-activities>
     </dxi-item>
     <dxi-item title="Opportunities">
       <card-opportunities
-        [openedOpportunities]="activeOpportunities"
-        [closedOpportunities]="closedOpportunities"
+        [openedOpportunities]="activeOpportunities()"
+        [closedOpportunities]="closedOpportunities()"
       ></card-opportunities>
     </dxi-item>
     <dxi-item title="Notes">
-      <card-notes [user]="contactName" [items]="notes"></card-notes>
+      <card-notes [user]="contactName()" [items]="notes()"></card-notes>
     </dxi-item>
     <dxi-item title="Messages">
-      <card-messages [user]="contactName" [items]="messages"></card-messages>
+      <card-messages [user]="contactName()" [items]="messages()"></card-messages>
     </dxi-item>
   </dx-tab-panel>
 </div>

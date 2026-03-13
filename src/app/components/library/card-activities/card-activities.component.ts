@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { DxButtonModule } from 'devextreme-angular/ui/button';
 import { DxListModule } from 'devextreme-angular/ui/list';
 import { DxLoadPanelModule } from 'devextreme-angular/ui/load-panel';
@@ -15,15 +15,16 @@ import { Activity } from 'src/app/types/activities';
     DxButtonModule,
     DxLoadPanelModule,
     CardMenuComponent,
-    CommonModule,
-  ]
+    DatePipe,
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CardActivitiesComponent {
-  @Input() activities: Activity[];
+  readonly activities = input<Activity[]>();
 
-  @Input() showBy? = false;
+  readonly showBy = input(false);
 
-  @Input() isLoading: boolean = false;
+  readonly isLoading = input(false);
 
   activityMenuItems: Array<{ text: string }> = [
     { text: 'View Details' },

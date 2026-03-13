@@ -1,5 +1,4 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ValidationCallbackData } from 'devextreme-angular/common';
@@ -11,8 +10,8 @@ import { AuthService } from '../../../services';
 @Component({
   selector: 'app-change-password-form',
   templateUrl: './change-password-form.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     RouterModule,
     DxFormModule,
     DxLoadIndicatorModule,
@@ -25,7 +24,7 @@ export class ChangePasswordFormComponent implements OnInit, OnDestroy {
 
   private route = inject(ActivatedRoute);
 
-  loading = false;
+  readonly loading = signal(false);
 
   formData: any = {};
 
@@ -42,10 +41,10 @@ export class ChangePasswordFormComponent implements OnInit, OnDestroy {
   async onSubmit(e: Event) {
     e.preventDefault();
     const { password } = this.formData;
-    this.loading = true;
+    this.loading.set(true);
 
     const result = await this.authService.changePassword(password, this.recoveryCode);
-    this.loading = false;
+    this.loading.set(false);
 
     if (result.isOk) {
       this.router.navigate(['/auth/sign-in']);

@@ -1,8 +1,8 @@
 import {
+  ChangeDetectionStrategy,
   Component,
-  Input,
-  Output,
-  EventEmitter,
+  input,
+  output,
 } from '@angular/core';
 import { CardAnalyticsComponent } from '../../library/card-analytics/card-analytics.component';
 import { DxChartModule } from 'devextreme-angular/ui/chart';
@@ -13,6 +13,7 @@ import { Sale } from 'src/app/types/analytics';
   selector: 'sales-performance-card',
   templateUrl: './sales-performance-card.component.html',
   styleUrls: ['./sales-performance-card.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CardAnalyticsComponent,
     DxChartModule,
@@ -20,19 +21,19 @@ import { Sale } from 'src/app/types/analytics';
   ],
 })
 export class SalesPerformanceCardComponent {
-  @Input() groupByPeriods: string[];
+  readonly groupByPeriods = input<string[]>();
 
-  @Input() salesByDateAndCategory: Sale[];
+  readonly salesByDateAndCategory = input<Sale[]>();
 
-  @Input() visualRange: unknown = {};
+  readonly visualRange = input<unknown>({});
 
-  @Output() performancePeriodChanged = new EventEmitter();
+  readonly performancePeriodChanged = output<any>();
 
-  customiseToolip({ seriesName }) {
+  customiseToolip({ seriesName }: { seriesName: string }) {
     return { text: seriesName };
   }
 
-  onDropDownSelectionChange(event) {
+  onDropDownSelectionChange(event: any) {
     this.performancePeriodChanged.emit(event);
   }
 }

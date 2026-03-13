@@ -1,7 +1,6 @@
 import {
-  Component, Input,OnChanges, SimpleChanges, ViewChild,
+  ChangeDetectionStrategy, Component, effect, input, signal, ViewChild,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import {
   DxDataGridComponent,
   DxDataGridModule,
@@ -17,34 +16,41 @@ import { Task } from '../../../types/task';
   imports: [
     DxDataGridModule,
     DxLoadPanelModule,
-    CommonModule,
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CardTasksComponent implements OnChanges {
+export class CardTasksComponent {
   @ViewChild('dataGrid', { static: false }) component: DxDataGridComponent;
 
-  @Input() tasks: Task[];
+  readonly tasks = input<Task[]>();
 
-  @Input() isLoading: boolean = false;
+  readonly isLoading = input(false);
 
-  currentTasks: Task[];
+  readonly currentTasks = signal<Task[] | undefined>(undefined);
 
   constructor() {
     this.onReorder = this.onReorder.bind(this);
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if(changes.tasks?.currentValue) {
-      this.currentTasks = changes.tasks.currentValue.filter((item) => !!item.status && !!item.priority);
-    }
+    effect(() => {
+      const t = this.tasks();
+      if (t) {
+        this.currentTasks.set(t.filter((item) => !!item.status && !!item.priority));
+      }
+    });
   }
 
   onReorder(e: DxDataGridTypes.RowDraggingReorderEvent) {
     const visibleRows = e.component.getVisibleRows();
-    const toIndex = this.currentTasks.indexOf(visibleRows[e.toIndex].data);
-    const fromIndex = this.currentTasks.indexOf(e.itemData);
+    const tasks = this.currentTasks();
+    if (!tasks) return;
+    const toIndex = tasks.indexOf(visibleRows[e.toIndex].data);
+    const fromIndex = tasks.indexOf(e.itemData);
 
-    this.currentTasks.splice(fromIndex, 1);
-    this.currentTasks.splice(toIndex, 0, e.itemData);
+    this.currentTasks.update((current) => {
+      if (!current) return current;
+      const updated = [...current];
+      updated.splice(fromIndex, 1);
+      updated.splice(toIndex, 0, e.itemData);
+      return updated;
+    });
   }
 }

@@ -1,7 +1,6 @@
 import {
-  Component, ViewChild, EventEmitter, Output, Input, SimpleChanges, OnChanges, inject,
+  ChangeDetectionStrategy, Component, ViewChild, effect, input, output, signal, inject,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import {
   DxButtonModule,
@@ -27,6 +26,7 @@ import 'jspdf-autotable';
   selector: 'task-list-grid',
   templateUrl: './task-list-grid.component.html',
   styleUrls: ['./task-list-grid.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DxButtonModule,
     DxDataGridModule,
@@ -35,28 +35,36 @@ import 'jspdf-autotable';
     DxTextBoxModule,
     DxToolbarModule,
     StatusIndicatorComponent,
-    CommonModule
   ],
   providers: []
 })
-export class TaskListGridComponent implements OnChanges {
+export class TaskListGridComponent {
   @ViewChild(DxDataGridComponent, { static: false }) grid: DxDataGridComponent;
 
-  @Input() dataSource: Task[];
+  readonly dataSource = input<Task[]>();
 
-  @Output() tabValueChanged: EventEmitter<any> = new EventEmitter<EventEmitter<any>>();
+  readonly tabValueChanged = output<any>();
 
   private router = inject(Router);
 
-  tasks: Task[];
+  readonly tasks = signal<Task[]>([]);
 
   priorityList = taskPriorityList;
 
   statusList = taskStatusList;
 
-  isLoading = true;
+  readonly isLoading = signal(true);
 
   useNavigation = true;
+
+  constructor() {
+    effect(() => {
+      const ds = this.dataSource();
+      if (ds) {
+        this.tasks.set(ds.filter((item) => !!item.status && !!item.priority));
+      }
+    });
+  }
 
   refresh() {
     this.grid.instance.refresh();
@@ -78,7 +86,7 @@ export class TaskListGridComponent implements OnChanges {
     }).then(() => {
       doc.save('Tasks.pdf');
     });
-  };
+  }
 
   onExportingToXLSX() {
     const workbook = new Workbook();
@@ -93,13 +101,7 @@ export class TaskListGridComponent implements OnChanges {
         saveAs(new Blob([buffer], { type: 'application/octet-stream' }), 'Tasks.xlsx');
       });
     });
-  };
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes.dataSource) {
-      this.tasks = changes.dataSource.currentValue.filter((item) => !!item.status && !!item.priority);
-    }
-  };
+  }
 
   toogleUseNavigation = () => {
     this.useNavigation = !this.useNavigation;

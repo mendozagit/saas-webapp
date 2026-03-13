@@ -1,6 +1,5 @@
-import { CommonModule } from '@angular/common';
 import {
-  Component, Input, OnInit,
+  ChangeDetectionStrategy, Component, computed, input,
 } from '@angular/core';
 import { TaskStatus, TaskPriority } from 'src/app/types/task';
 import { DxTextBoxModule } from 'devextreme-angular/ui/text-box';
@@ -9,43 +8,42 @@ import { DxTextBoxModule } from 'devextreme-angular/ui/text-box';
   selector: 'status-indicator',
   template: `
     <div
-      [ngClass]="{'input-with-bar': showBar }"
+      [class.input-with-bar]="showBar()"
       class="
       status
       status-indicator
-      status-indicator-{{ dashValue }}">
-      <span *ngIf="!isField" class="status-indicator-{{ dashValue }}">{{ getValue(value) }}</span>
-      <dx-text-box
-        *ngIf="isField"
-        class="status-indicator-{{ dashValue }}"
-        [inputAttr]="{class: 'status-input status-editor-input'}"
-        [hoverStateEnabled]="false"
-        [readOnly]="true"
-        [value]="getValue(value)">
-      </dx-text-box>
+      status-indicator-{{ dashValue() }}">
+      @if (!isField()) {
+        <span class="status-indicator-{{ dashValue() }}">{{ getValue(value()) }}</span>
+      }
+      @if (isField()) {
+        <dx-text-box
+          class="status-indicator-{{ dashValue() }}"
+          [inputAttr]="{class: 'status-input status-editor-input'}"
+          [hoverStateEnabled]="false"
+          [readOnly]="true"
+          [value]="getValue(value())">
+        </dx-text-box>
+      }
     </div>
   `,
   styleUrls: ['./status-indicator.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     DxTextBoxModule,
   ]
 })
-export class StatusIndicatorComponent implements OnInit {
-  @Input() value: TaskStatus | TaskPriority;
+export class StatusIndicatorComponent {
+  readonly value = input<TaskStatus | TaskPriority>();
 
-  @Input() isField = true;
+  readonly isField = input(true);
 
-  @Input() showBar = false;
+  readonly showBar = input(false);
 
-  dashValue = '';
-
-  ngOnInit() {
-    this.dashValue = this.spaceToDash(this.value).toLowerCase();
-  }
+  readonly dashValue = computed(() => this.spaceToDash(this.value() as TaskStatus).toLowerCase());
 
   getValue(value: string): string {
-    return (this.showBar ? '| ' : '') + value;
+    return (this.showBar() ? '| ' : '') + value;
   }
 
   spaceToDash = (value: TaskStatus) =>

@@ -1,18 +1,19 @@
 <div
-  [ngStyle]="{
-    'width.px': size,
-    'height.px': size,
-    'max-height.px': size,
-    'background-image': imageUrl
-  }"
+  [style.width.px]="size()"
+  [style.height.px]="size()"
+  [style.max-height.px]="size()"
+  [style.background-image]="imageUrl()"
   class="photo"
-  [class.editable]="editable"
+  [class.editable]="editable()"
 >
-  <i *ngIf="editable" class="edit-icon dx-icon-photooutline"></i>
+  @if (editable()) {
+    <i class="edit-icon dx-icon-photooutline"></i>
+  }
 </div>
-<dx-file-uploader
-  *ngIf="editable"
-  [dialogTrigger]="hostRef"
-  [visible]="false"
-  accept="image/*"
-></dx-file-uploader>
+@if (editable()) {
+  <dx-file-uploader
+    [dialogTrigger]="hostRef"
+    [visible]="false"
+    accept="image/*"
+  ></dx-file-uploader>
+}

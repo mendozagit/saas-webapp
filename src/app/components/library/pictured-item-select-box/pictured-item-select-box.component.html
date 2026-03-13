@@ -1,9 +1,9 @@
 <dx-select-box
   class="pictured-item-select-box"
-  [label]="label"
-  [value]="value"
+  [label]="label()"
+  [value]="value()"
   (onValueChanged)="valueChange.emit($event.value)"
-  [items]="items"
+  [items]="items()"
   valueExpr="name"
   stylingMode="filled"
   labelMode="hidden"

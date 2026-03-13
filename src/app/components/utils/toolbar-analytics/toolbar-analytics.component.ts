@@ -1,5 +1,5 @@
-import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, input, output, inject } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
 
 import { DxButtonComponent } from "devextreme-angular";
 import { DxTabsModule } from 'devextreme-angular/ui/tabs';
@@ -13,22 +13,22 @@ import { Dates, PanelItem } from 'src/app/types/resource';
   selector: 'toolbar-analytics',
   templateUrl: './toolbar-analytics.component.html',
   styleUrls: ['./toolbar-analytics.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
+    AsyncPipe,
     DxButtonComponent,
     DxTabsModule,
     DxToolbarModule
   ],
 })
-
 export class ToolbarAnalyticsComponent {
-  @Input() selectedItems: Array<number>;
+  readonly selectedItems = input<Array<number>>();
 
-  @Input() titleText: string;
+  readonly titleText = input<string>();
 
-  @Input() panelItems: Array<PanelItem>;
+  readonly panelItems = input<Array<PanelItem>>();
 
-  @Output() selectionChanged = new EventEmitter<Dates>();
+  readonly selectionChanged = output<Dates>();
 
   protected screen = inject(ScreenService);
 

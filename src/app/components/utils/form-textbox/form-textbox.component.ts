@@ -1,10 +1,9 @@
 import {
+  ChangeDetectionStrategy,
   Component,
-  EventEmitter,
-  Input,
-  Output
+  input,
+  model,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import {
   DxButtonModule,
   DxTextBoxModule,
@@ -16,32 +15,25 @@ import { ValidationRule } from 'devextreme-angular/common';
   selector: 'form-textbox',
   templateUrl: './form-textbox.component.html',
   styleUrls: ['form-textbox.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DxButtonModule,
     DxTextBoxModule,
     DxValidatorModule,
-    CommonModule,
   ],
 })
 export class FormTextboxComponent {
-  @Input() isEditing = false;
+  readonly isEditing = input(false);
 
-  @Input() text: string;
+  readonly text = input<string>();
 
-  @Input() label = '';
+  readonly label = input('');
 
-  @Input() mask: string = null;
+  readonly mask = input<string | null>(null);
 
-  @Input() icon: string = null;
+  readonly icon = input<string | null>(null);
 
-  @Input() validators: ValidationRule[] = [{ type: 'required' }];
+  readonly validators = input<ValidationRule[]>([{ type: 'required' }]);
 
-  @Input() value!: string;
-
-  @Output() valueChange = new EventEmitter<string>();
-
-  valueChanged(e) {
-    this.valueChange.emit(e.value);
-  }
-
+  readonly value = model<string>('');
 }

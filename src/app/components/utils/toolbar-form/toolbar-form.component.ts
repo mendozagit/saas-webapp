@@ -1,33 +1,33 @@
 import {
+  ChangeDetectionStrategy,
   Component,
-  Input,
-  Output,
-  EventEmitter,
+  input,
+  output,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { DxToolbarModule } from 'devextreme-angular/ui/toolbar';
 import { DxButtonComponent } from "devextreme-angular";
+import { DxButtonTypes } from 'devextreme-angular/ui/button';
 
 @Component({
   selector: 'toolbar-form',
   templateUrl: './toolbar-form.component.html',
   styleUrls: ['./toolbar-form.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DxToolbarModule,
     DxButtonComponent,
-    CommonModule,
   ],
 })
 export class ToolbarFormComponent {
-  @Input() isEditing: boolean;
+  readonly isEditing = input<boolean>();
 
-  @Input() titleClass: string;
+  readonly titleClass = input<string>();
 
-  @Output() editModeToggled = new EventEmitter();
+  readonly editModeToggled = output();
 
-  @Output() saveButtonClicked = new EventEmitter();
+  readonly saveButtonClicked = output<DxButtonTypes.ClickEvent>();
 
-  @Output() editingCancelled = new EventEmitter();
+  readonly editingCancelled = output();
 
   handleCancelEditClick () {
     this.editingCancelled.emit();

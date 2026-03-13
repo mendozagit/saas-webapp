@@ -1,8 +1,8 @@
 <card-analytics contentClass="sales-range" [isMenuVisible]="false">
-  @if (data && data.length > 0) {
+  @if (data() && data().length > 0) {
     <dx-range-selector
-      [dataSource]="data"
-      [(value)]="visualRange"
+      [dataSource]="data()"
+      [value]="visualRange()"
       (onValueChanged)="onRangeChanged($event)"
     >
       <dxo-scale

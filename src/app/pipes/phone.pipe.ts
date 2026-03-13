@@ -9,6 +9,6 @@ export function formatPhone(value) {
 })
 export class PhonePipeDirective implements PipeTransform {
   transform(value: number): any {
-   return formatPhone(value);
+    return formatPhone(value);
   }
 }

@@ -1,5 +1,4 @@
-import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { DxButtonModule } from 'devextreme-angular';
 import { ThemeService } from 'src/app/services';
 
@@ -13,8 +12,8 @@ import { ThemeService } from 'src/app/services';
       (onClick)="onButtonClick()"
     ></dx-button>
   `,
-  styleUrls: [],
-  imports: [ CommonModule, DxButtonModule ],
+  imports: [ DxButtonModule ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ThemeSwitcherComponent {
   protected themeService = inject(ThemeService);

@@ -1,5 +1,5 @@
-import {Component, inject, Input} from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
+import { LowerCasePipe, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { DxButtonModule, DxToastModule } from 'devextreme-angular';
 import notify from 'devextreme/ui/notify';
@@ -11,15 +11,17 @@ import { UserAvatarComponent } from 'src/app/components/library/user-avatar/user
   selector: 'task-kanban-card',
   templateUrl: './task-kanban-card.component.html',
   styleUrls: ['./task-kanban-card.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DxButtonModule,
     DxToastModule,
-    CommonModule,
+    LowerCasePipe,
+    DatePipe,
     UserAvatarComponent,
   ],
 })
 export class TaskKanbanCardComponent {
-  @Input() task: Task;
+  readonly task = input<Task>();
 
   private router = inject(Router);
 
@@ -27,12 +29,12 @@ export class TaskKanbanCardComponent {
 
   notify = (e) => {
     e.event.stopPropagation();
-    notify(`Edit '${this.task.text}' card event`);
+    notify(`Edit '${this.task().text}' card event`);
   };
 
   navigateToDetails = () => {
     this.router.navigate(['/planning-task-details'], {
-      queryParams: { id: this.task.id }
+      queryParams: { id: this.task().id }
     });
   };
 }

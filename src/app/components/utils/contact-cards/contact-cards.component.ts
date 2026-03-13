@@ -1,5 +1,4 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import {
   DxButtonModule,
   DxTabPanelModule,
@@ -22,6 +21,7 @@ import { Task } from 'src/app/types/task';
   selector: 'contact-cards',
   templateUrl: './contact-cards.component.html',
   styleUrls: ['./contact-cards.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DxButtonModule,
     DxTabPanelModule,
@@ -32,25 +32,23 @@ import { Task } from 'src/app/types/task';
     CardActivitiesComponent,
     CardOpportunitiesComponent,
     CardTasksComponent,
-
-    CommonModule,
   ],
 })
 export class ContactCardsComponent {
-    @Input() tasks: Task[];
+  readonly tasks = input<Task[]>();
 
-    @Input() activities: Activity[];
+  readonly activities = input<Activity[]>();
 
-    @Input() activeOpportunities: Opportunities;
+  readonly activeOpportunities = input<Opportunities>();
 
-    @Input() closedOpportunities: Opportunities;
+  readonly closedOpportunities = input<Opportunities>();
 
-    @Input() notes: Notes;
+  readonly notes = input<Notes>();
 
-    @Input() messages: Messages;
+  readonly messages = input<Messages>();
 
-    @Input() contactName: string;
+  readonly contactName = input<string>();
 
-    @Input() isLoading: boolean;
+  readonly isLoading = input(false);
 }
 

@@ -3,7 +3,7 @@
     labelLocation="top"
     [formData]="formData"
     [showColonAfterLabel]="true"
-    [disabled]="loading"
+    [disabled]="loading()"
   >
     <dxi-item
       dataField="email"
@@ -67,8 +67,8 @@
     <dxi-item>
       <div class="policy-info">
         By creating an account, you agree to the
-        <a [routerLink]="redirectLink">Terms of Service</a> and
-        <a [routerLink]="redirectLink">Privacy Policy</a>
+        <a [routerLink]="redirectLink()">Terms of Service</a> and
+        <a [routerLink]="redirectLink()">Privacy Policy</a>
       </div>
     </dxi-item>
 
@@ -84,20 +84,20 @@
 
     <ng-container *dxTemplate="let item of 'createAccountTemplate'">
       <span class="dx-button-text">
-        <ng-container *ngIf="loading; else notLoading">
+        @if (loading()) {
           <dx-load-indicator
             width="24px"
             height="24px"
             [visible]="true"
           ></dx-load-indicator>
-        </ng-container>
-
-        <ng-template #notLoading>Register</ng-template>
+        } @else {
+          Register
+        }
       </span>
     </ng-container>
   </dx-form>
   <div class="login-link">
-    Have an account? <a [routerLink]="redirectLink">Sign In</a>
+    Have an account? <a [routerLink]="redirectLink()">Sign In</a>
   </div>
   <app-login-oauth></app-login-oauth>
 </form>

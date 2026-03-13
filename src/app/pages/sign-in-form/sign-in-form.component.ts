@@ -1,5 +1,4 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 import { CardAuthComponent, LoginFormComponent } from 'src/app/components';
 
@@ -7,8 +6,8 @@ import { CardAuthComponent, LoginFormComponent } from 'src/app/components';
   selector: 'app-sign-in-form',
   templateUrl: './sign-in-form.component.html',
   styleUrls: ['./sign-in-form.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     LoginFormComponent,
     CardAuthComponent,
   ]

@@ -1,5 +1,4 @@
-import { Component, Input, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, input, ViewChild } from '@angular/core';
 
 import { DxDropDownButtonModule } from 'devextreme-angular/ui/drop-down-button';
 import { UserMenuSectionComponent } from '../user-menu-section/user-menu-section.component';
@@ -11,19 +10,16 @@ import { IUser } from '../../../services/auth.service';
   imports: [
     DxDropDownButtonModule,
     UserMenuSectionComponent,
-    CommonModule,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
 export class UserPanelComponent {
-  @Input()
-  menuItems: any;
+  readonly menuItems = input<any[]>();
 
-  @Input()
-  menuMode!: string;
+  readonly menuMode = input<string>();
 
-  @Input()
-  user!: IUser | null;
+  readonly user = input<IUser | null>();
 
   @ViewChild(UserMenuSectionComponent) userMenuSection: UserMenuSectionComponent;
 

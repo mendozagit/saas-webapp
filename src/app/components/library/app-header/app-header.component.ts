@@ -1,7 +1,6 @@
 import {
-  Component, Input, Output, EventEmitter, OnInit, inject,
+  ChangeDetectionStrategy, Component, OnInit, inject, input, output, signal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 import { DxButtonModule } from 'devextreme-angular/ui/button';
 import { DxToolbarModule } from 'devextreme-angular/ui/toolbar';
@@ -14,40 +13,36 @@ import { ThemeSwitcherComponent } from 'src/app/components/library/theme-switche
   selector: 'app-header',
   templateUrl: 'app-header.component.html',
   styleUrls: ['./app-header.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-      CommonModule,
-      DxButtonModule,
-      DxToolbarModule,
-      ThemeSwitcherComponent,
-      UserPanelComponent,
+    DxButtonModule,
+    DxToolbarModule,
+    ThemeSwitcherComponent,
+    UserPanelComponent,
   ]
 })
-
 export class AppHeaderComponent implements OnInit {
-  @Output()
-  menuToggle = new EventEmitter<boolean>();
+  readonly menuToggle = output();
 
-  @Input()
-  menuToggleEnabled = false;
+  readonly menuToggleEnabled = input(false);
 
-  @Input()
-  title!: string;
+  readonly title = input<string>();
 
   private authService = inject(AuthService);
 
-  user: IUser | null = { email: '' };
+  user = signal<IUser | null>({ email: '' });
 
   userMenuItems = [
-  {
-    text: 'Logout',
-    icon: 'runner',
-    onClick: () => {
-      this.authService.logOut();
-    },
-  }];
+    {
+      text: 'Logout',
+      icon: 'runner',
+      onClick: () => {
+        this.authService.logOut();
+      },
+    }];
 
   ngOnInit() {
-    this.authService.getUser().then((e) => this.user = e.data);
+    this.authService.getUser().then((e) => this.user.set(e.data));
   }
 
   toggleMenu = () => {

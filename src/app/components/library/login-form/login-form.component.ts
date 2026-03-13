@@ -1,5 +1,4 @@
-import { CommonModule } from '@angular/common';
-import {Component, Input, OnInit, inject} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, input, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 
 import { LoginOauthComponent } from 'src/app/components/library/login-oauth/login-oauth.component';
@@ -13,8 +12,8 @@ import { AuthService, IResponse, ThemeService } from 'src/app/services';
   selector: 'app-login-form',
   templateUrl: './login-form.component.html',
   styleUrls: ['./login-form.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     RouterModule,
     LoginOauthComponent,
     DxFormModule,
@@ -23,9 +22,9 @@ import { AuthService, IResponse, ThemeService } from 'src/app/services';
   ]
 })
 export class LoginFormComponent implements OnInit {
-  @Input() resetLink = '/auth/reset-password';
+  readonly resetLink = input('/auth/reset-password');
 
-  @Input() createAccountLink = '/auth/register';
+  readonly createAccountLink = input('/auth/register');
 
   private authService = inject(AuthService);
 
@@ -35,11 +34,11 @@ export class LoginFormComponent implements OnInit {
 
   defaultAuthData: IResponse;
 
-  btnStylingMode: DxButtonTypes.ButtonStyle;
+  readonly btnStylingMode = signal<DxButtonTypes.ButtonStyle>('contained');
 
   passwordMode = 'password';
 
-  loading = false;
+  readonly loading = signal(false);
 
   formData: any = {};
 
@@ -52,24 +51,24 @@ export class LoginFormComponent implements OnInit {
 
   constructor() {
     this.themeService.isDark.subscribe((value: boolean) => {
-      this.btnStylingMode = value ? 'outlined' : 'contained';
+      this.btnStylingMode.set(value ? 'outlined' : 'contained');
     });
   }
 
   async onSubmit(e: Event) {
     e.preventDefault();
     const { email, password } = this.formData;
-    this.loading = true;
+    this.loading.set(true);
 
     const result = await this.authService.logIn(email, password);
-    this.loading = false;
+    this.loading.set(false);
     if (!result.isOk) {
       notify(result.message, 'error', 2000);
     }
   }
 
   onCreateAccountClick = () => {
-    this.router.navigate([this.createAccountLink]);
+    this.router.navigate([this.createAccountLink()]);
   };
 
   async ngOnInit(): Promise<void> {

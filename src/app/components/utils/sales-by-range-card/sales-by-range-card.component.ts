@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { CardAnalyticsComponent } from '../../library/card-analytics/card-analytics.component';
 import { DxPieChartModule } from 'devextreme-angular/ui/pie-chart';
 import { DxChartModule } from 'devextreme-angular/ui/chart';
@@ -9,6 +9,7 @@ import { SalesOrOpportunitiesByCategory } from 'src/app/types/analytics';
   selector: 'sales-by-range-card',
   templateUrl: './sales-by-range-card.component.html',
   styleUrls: ['./sales-by-range-card.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CardAnalyticsComponent,
     DxPieChartModule,
@@ -17,7 +18,7 @@ import { SalesOrOpportunitiesByCategory } from 'src/app/types/analytics';
   ],
 })
 export class SalesByRangeCardComponent {
-  @Input() data: SalesOrOpportunitiesByCategory;
+  readonly data = input<SalesOrOpportunitiesByCategory>();
 
   customizeSaleText(arg: { percentText: string }) {
     return arg.percentText;

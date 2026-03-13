@@ -3,15 +3,15 @@
     <dx-drop-down-button
       stylingMode="text"
       [useSelectMode]="true"
-      [items]="groupByPeriods"
-      [selectedItemKey]="groupByPeriods[1]"
+      [items]="groupByPeriods()"
+      [selectedItemKey]="groupByPeriods()[1]"
       (onSelectionChanged)="onDropDownSelectionChange($event)"
     >
     </dx-drop-down-button>
   </div>
 
-  <dx-chart [dataSource]="salesByDateAndCategory">
-    <dxo-argument-axis [visualRange]="visualRange"> </dxo-argument-axis>
+  <dx-chart [dataSource]="salesByDateAndCategory()">
+    <dxo-argument-axis [visualRange]="visualRange()"> </dxo-argument-axis>
     <dxo-tooltip
       [enabled]="true"
       [customizeTooltip]="customiseToolip"

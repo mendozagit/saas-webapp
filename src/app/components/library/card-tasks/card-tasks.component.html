@@ -1,8 +1,8 @@
 <div id="card-tasks">
+  @if (currentTasks()) {
   <dx-data-grid
-    *ngIf="currentTasks"
     #dataGrid
-    [dataSource]="currentTasks"
+    [dataSource]="currentTasks()"
     [columnAutoWidth]="true"
   >
     <dxo-selection mode="multiple" showCheckBoxesMode="always"></dxo-selection>
@@ -30,9 +30,10 @@
       [hidingPriority]="0"
     ></dxi-column>
   </dx-data-grid>
+  }
 
   <dx-load-panel
-    [visible]="!currentTasks || isLoading"
+    [visible]="!currentTasks() || isLoading()"
     [showPane]="false"
     container="#card-tasks"
     [position]="{ of: '#card-tasks' }"

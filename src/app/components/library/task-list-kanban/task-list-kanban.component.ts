@@ -1,7 +1,6 @@
 import {
-  Component, Input, SimpleChanges, OnChanges, ViewChild, Output, EventEmitter,
+  ChangeDetectionStrategy, Component, effect, input, output, signal, ViewChild,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { DxButtonModule } from 'devextreme-angular/ui/button';
 import { DxScrollViewModule } from 'devextreme-angular/ui/scroll-view';
 import { DxSortableModule, DxSortableComponent } from 'devextreme-angular/ui/sortable';
@@ -21,23 +20,23 @@ type Board = {
   selector: 'task-list-kanban',
   templateUrl: './task-list-kanban.component.html',
   styleUrls: ['./task-list-kanban.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DxButtonModule,
     DxScrollViewModule,
     DxSortableModule,
     TaskKanbanCardComponent,
     CardMenuComponent,
-    CommonModule,
   ]
 })
-export class TaskListKanbanComponent implements OnChanges {
+export class TaskListKanbanComponent {
   @ViewChild(DxSortableComponent, { static: false }) sortable: DxSortableComponent;
 
-  @Input() dataSource: Task[];
+  readonly dataSource = input<Task[]>();
 
-  @Output() addTaskEvent: EventEmitter<any> = new EventEmitter();
+  readonly addTaskEvent = output<void>();
 
-  kanbanDataSource: Board[] = [];
+  readonly kanbanDataSource = signal<Board[]>([]);
 
   statuses = taskStatusList;
 
@@ -46,6 +45,15 @@ export class TaskListKanbanComponent implements OnChanges {
     { text: 'Copy list' },
     { text: 'Move list' },
   ];
+
+  constructor() {
+    effect(() => {
+      const ds = this.dataSource();
+      if (ds) {
+        this.kanbanDataSource.set(this.fillOutBoard(ds));
+      }
+    });
+  }
 
   refresh() {
     this.sortable.instance.update();
@@ -62,16 +70,12 @@ export class TaskListKanbanComponent implements OnChanges {
     return result;
   };
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes.dataSource) {
-      this.kanbanDataSource = this.fillOutBoard(changes.dataSource.currentValue);
-    }
-  }
-
   onListReorder = (e: DxSortableTypes.ReorderEvent) => {
     const { fromIndex, toIndex } = e;
-    const list = this.kanbanDataSource.splice(fromIndex, 1)[0];
-    this.kanbanDataSource.splice(toIndex, 0, list);
+    const current = this.kanbanDataSource();
+    const list = current.splice(fromIndex, 1)[0];
+    current.splice(toIndex, 0, list);
+    this.kanbanDataSource.set([...current]);
   };
 
   onTaskDragStart(e: DxSortableTypes.DragStartEvent) {

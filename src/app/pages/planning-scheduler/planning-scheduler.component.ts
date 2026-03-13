@@ -1,8 +1,8 @@
 import {
-  Component, inject, OnInit, ViewChild
+  ChangeDetectionStrategy, Component, inject, OnInit, signal, ViewChild
 } from '@angular/core';
 import DataSource from 'devextreme/data/data_source';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import {
   DxCalendarModule,
   DxButtonModule,
@@ -28,6 +28,7 @@ type SelectedAppointment = { data: Record<string, any>, target: any };
 @Component({
   templateUrl: './planning-scheduler.component.html',
   styleUrls: ['./planning-scheduler.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [DataService],
   imports: [
     ApplyPipeDirective,
@@ -36,7 +37,8 @@ type SelectedAppointment = { data: Record<string, any>, target: any };
     DxSchedulerModule,
     DxSpeedDialActionModule,
     DxTooltipModule,
-    CommonModule,
+    AsyncPipe,
+    DatePipe,
     CalendarListComponent,
     LeftSidePanelComponent,
     RightSidePanelComponent,
@@ -53,65 +55,65 @@ export class PlanningSchedulerComponent implements OnInit {
 
   protected screen = inject(ScreenService);
 
-  tasks: DataSource<Task> = new DataSource([]);
+  tasks = signal<DataSource<Task>>(new DataSource([]));
 
-  currentDate = new Date();
+  currentDate = signal(new Date());
 
-  currentView: DxSchedulerTypes.ViewType = 'workWeek';
+  currentView = signal<DxSchedulerTypes.ViewType>('workWeek');
 
-  isRightPanelOpen = false;
+  isRightPanelOpen = signal(false);
 
-  listDataSource = [];
+  listDataSource = signal<unknown[]>([]);
 
-  resourcesList = [];
+  resourcesList = signal<Record<string, unknown>[]>([]);
 
-  selectedAppointment: SelectedAppointment = null;
+  selectedAppointment = signal<SelectedAppointment>(null);
 
-  agendaItems: AgendaItem[] = [];
+  agendaItems = signal<AgendaItem[]>([]);
 
-  isXSmall = this.screen.sizes['screen-small'];
+  isXSmall = signal(this.screen.sizes['screen-small']);
 
-  schedulerCurrentDate: Date = this.currentDate;
+  schedulerCurrentDate = signal<Date>(new Date());
 
   constructor() {
     this.service.getDefaultListDS().subscribe(
-   (data) => {
-     this.listDataSource = data;
-     this.resourcesList = data.reduce((res: Record<string,any>[], calendarList) => res.concat(calendarList.items), []);
+      (data) => {
+        this.listDataSource.set(data);
+        this.resourcesList.set(data.reduce((res: Record<string,any>[], calendarList) => res.concat(calendarList.items), []));
       });
 
     this.screen.screenChanged.subscribe(({isXSmall}) => {
-      this.isXSmall = isXSmall;
+      this.isXSmall.set(isXSmall);
       this.repaintScheduler();
     });
   }
 
   ngOnInit(): void {
     this.service.getSchedulerTasks().subscribe((data) => {
-      this.tasks = new DataSource(data);
+      this.tasks.set(new DataSource(data));
       this.repaintScheduler();
     })
   }
 
-  onCalendarDateChange = (date) => {
-    this.currentDate = date;
-    this.updateAgenda({ startDate: this.currentDate });
+  onCalendarDateChange = (date: Date) => {
+    this.currentDate.set(date);
+    this.updateAgenda({ startDate: this.currentDate() });
     this.repaintScheduler();
   };
 
-  getSchedulerCurrentDate = (currentDate) => {
+  getSchedulerCurrentDate = (currentDate: Date) => {
     const schedulerInstance = this.schedulerRef?.instance;
     const startViewDate = schedulerInstance?.getStartViewDate();
     const endViewDate = schedulerInstance?.getEndViewDate();
 
-    if (this.schedulerCurrentDate.getMonth() !== currentDate.getMonth() ||
+    if (this.schedulerCurrentDate().getMonth() !== currentDate.getMonth() ||
       startViewDate && startViewDate > currentDate ||
       endViewDate && endViewDate < currentDate
     ) {
-      this.schedulerCurrentDate = currentDate;
+      this.schedulerCurrentDate.set(currentDate);
     }
 
-    return this.schedulerCurrentDate;
+    return this.schedulerCurrentDate();
   }
 
   onSchedulerOptionChanged(e: DxSchedulerTypes.OptionChangedEvent) {
@@ -120,11 +122,11 @@ export class PlanningSchedulerComponent implements OnInit {
     }
   }
   onCurrentViewChange = (view: DxSchedulerTypes.ViewType) => {
-    this.currentView = view;
+    this.currentView.set(view);
 
-    if (this.currentView === 'month' && !this.screen.sizes['screen-x-small']) {
-      this.isRightPanelOpen = true;
-      this.updateAgenda({ startDate: this.currentDate });
+    if (this.currentView() === 'month' && !this.screen.sizes['screen-x-small']) {
+      this.isRightPanelOpen.set(true);
+      this.updateAgenda({ startDate: this.currentDate() });
     }
 
     this.repaintScheduler();
@@ -132,33 +134,34 @@ export class PlanningSchedulerComponent implements OnInit {
 
   onSelectedDateChange = (e?: Date) => {
     const date = e instanceof Date ? e : new Date();
-    this.currentDate = date;
-    this.selectedAppointment = { data: { startDate: date }, target: undefined };
+    this.currentDate.set(date);
+    this.selectedAppointment.set({ data: { startDate: date }, target: undefined });
     this.updateAgenda({ startDate: date });
   }
 
-  onCellClick = ({cellData}) => {
+  onCellClick = ({cellData}: any) => {
     this.onSelectedDateChange(cellData.startDate);
 
-    if (this.currentView === 'month' && cellData) {
+    if (this.currentView() === 'month' && cellData) {
       const cellAppointments = this.findAllAppointmentsForDay(cellData);
 
       if (cellAppointments.length > 1) {
-        this.selectedAppointment = { data: cellData, target: null };
-        this.agendaItems = cellAppointments;
+        this.selectedAppointment.set({ data: cellData, target: null });
+        this.agendaItems.set(cellAppointments);
         this.toggleRightPanelOpen(true);
       }
     }
   };
 
-  calendarListChanged(selectedCalendars) {
+  calendarListChanged(selectedCalendars: any[]) {
     const filters = selectedCalendars
       .flatMap((calendar) => [['calendarId', '=', calendar.id], 'or']).slice(0, -1);
 
-    this.tasks?.filter(filters.length > 0 ? filters : null);
+    const tasksDs = this.tasks();
+    tasksDs?.filter(filters.length > 0 ? filters : null);
 
-    this.tasks?.load();
-    this.updateAgenda({ startDate: this.currentDate });
+    tasksDs?.load();
+    this.updateAgenda({ startDate: this.currentDate() });
   }
 
   repaintScheduler() {
@@ -173,20 +176,21 @@ export class PlanningSchedulerComponent implements OnInit {
     return classList?.contains('dx-list') && rightPanelOpen ? 'left' : 'top';
   }
 
-  toggleRightPanelOpen(isOpen?) {
-    this.isRightPanelOpen = isOpen || !this.isRightPanelOpen;
+  toggleRightPanelOpen(isOpen?: boolean) {
+    this.isRightPanelOpen.set(isOpen || !this.isRightPanelOpen());
     this.repaintScheduler();
   }
 
-  showAppointmentCreationForm(appointment?) {
+  showAppointmentCreationForm(appointment?: SelectedAppointment) {
     this.schedulerRef?.instance.showAppointmentPopup(appointment?.data, !appointment);
   }
 
-  findAllAppointmentsForDay = (selectedAppointment) => {
-    if (!this.tasks) {
+  findAllAppointmentsForDay = (selectedAppointment: any) => {
+    const tasksDs = this.tasks();
+    if (!tasksDs) {
       return [];
     }
-    const appointments = this.tasks.items();
+    const appointments = tasksDs.items();
     if (appointments.length === 0 || !selectedAppointment) {
       return [];
     }
@@ -197,34 +201,34 @@ export class PlanningSchedulerComponent implements OnInit {
       });
   }
 
-  updateAgenda = (appointmentData?) => {
-    this.agendaItems = this.findAllAppointmentsForDay(appointmentData);
+  updateAgenda = (appointmentData?: any) => {
+    this.agendaItems.set(this.findAllAppointmentsForDay(appointmentData));
   }
 
-  onAppointmentClick(e) {
+  onAppointmentClick(e: any) {
     const appointmentData = e.appointmentData;
-    this.selectedAppointment = { data: appointmentData, target: e.targetElement };
+    this.selectedAppointment.set({ data: appointmentData, target: e.targetElement });
 
-    if (this.currentView === 'month') {
+    if (this.currentView() === 'month') {
       this.updateAgenda(appointmentData);
       this.toggleRightPanelOpen(true);
     }
   }
 
-  onAppointmentTooltipShowing = (e) => {
+  onAppointmentTooltipShowing = (e: any) => {
     e.cancel = true;
     const appointmentData = e.appointments[0].appointmentData;
-    const isAppointmentCollectorClicked = (e) => {
-      return e.targetElement?.[0]?.classList.contains('dx-scheduler-appointment-collector');
+    const isAppointmentCollectorClicked = (evt: any) => {
+      return evt.targetElement?.[0]?.classList.contains('dx-scheduler-appointment-collector');
     };
 
-    this.selectedAppointment = { data: appointmentData, target: e.targetElement };
+    this.selectedAppointment.set({ data: appointmentData, target: e.targetElement });
 
-    if (this.currentView === 'month' || isAppointmentCollectorClicked(e)) {
+    if (this.currentView() === 'month' || isAppointmentCollectorClicked(e)) {
       this.updateAgenda(appointmentData);
     }
 
-    if (this.currentView === 'month' && this.screen.sizes['screen-small'] ||
+    if (this.currentView() === 'month' && this.screen.sizes['screen-small'] ||
         isAppointmentCollectorClicked(e)) {
       this.toggleRightPanelOpen(true);
     }
@@ -233,18 +237,18 @@ export class PlanningSchedulerComponent implements OnInit {
     }
   }
 
-  showAppointmentTooltip = (e) => {
+  showAppointmentTooltip = (e: any) => {
     this.schedulerRef?.instance.showAppointmentTooltip(e.itemData, e.element);
   };
 
   editSelectedAppointment() {
-    this.showAppointmentCreationForm(this.selectedAppointment);
+    this.showAppointmentCreationForm(this.selectedAppointment());
     this.tooltipRef?.instance.hide();
   }
 
-  deleteSelectedAppointment(appointmentData) {
-    this.schedulerRef?.instance.deleteAppointment(this.selectedAppointment?.data);
+  deleteSelectedAppointment(appointmentData: any) {
+    this.schedulerRef?.instance.deleteAppointment(this.selectedAppointment()?.data);
     this.tooltipRef?.instance.hide();
-    this.agendaItems = this.findAllAppointmentsForDay(appointmentData)
+    this.agendaItems.set(this.findAllAppointmentsForDay(appointmentData));
   }
 }

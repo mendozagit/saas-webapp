@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { CardAnalyticsComponent } from '../../library/card-analytics/card-analytics.component';
 import { DxVectorMapModule, DxVectorMapTypes } from 'devextreme-angular/ui/vector-map';
 
@@ -9,13 +9,14 @@ import { MapLayerElement } from 'devextreme/viz/vector_map';
   selector: 'sales-map-card',
   templateUrl: './sales-map-card.component.html',
   styleUrls: ['./sales-map-card.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CardAnalyticsComponent,
     DxVectorMapModule,
   ],
 })
 export class SalesMapCardComponent {
-  @Input() data: any;
+  readonly data = input<any>();
 
   usaMap: any = mapsData.usa;
 

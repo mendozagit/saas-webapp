@@ -1,5 +1,5 @@
-import {Component, inject, OnInit} from '@angular/core';
-import { CommonModule, Location } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { forkJoin, map } from 'rxjs';
 
@@ -23,10 +23,9 @@ const DEFAULT_CONTACT_ID = 12;
 @Component({
   templateUrl: './crm-contact-details.component.html',
   styleUrls: ['./crm-contact-details.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ DataService ],
   imports: [
-    CommonModule,
-
     DxButtonModule,
     DxDropDownButtonModule,
     DxScrollViewModule,
@@ -45,19 +44,19 @@ export class CrmContactDetailsComponent implements OnInit {
 
   contactId: number;
 
-  contactData: Contact;
+  contactData = signal<Contact>(undefined);
 
-  contactNotes: Notes;
+  contactNotes = signal<Notes>(undefined);
 
-  contactMessages: Messages;
+  contactMessages = signal<Messages>(undefined);
 
-  activeOpportunities: Opportunities;
+  activeOpportunities = signal<Opportunities>(undefined);
 
-  closedOpportunities: Opportunities;
+  closedOpportunities = signal<Opportunities>(undefined);
 
-  contactName = 'Loading...';
+  contactName = signal('Loading...');
 
-  isLoading = false;
+  isLoading = signal(false);
 
   constructor() {
     const id = parseInt(this.route.snapshot.queryParamMap.get('id'), 10);
@@ -87,19 +86,24 @@ export class CrmContactDetailsComponent implements OnInit {
           activeOpportunities,
           closedOpportunities
         }))
-      ).subscribe(
-        (data) => Object.keys(data).forEach((key) => this[key] = data[key])
+    ).subscribe(
+      (data) => {
+        this.contactNotes.set(data.contactNotes as Notes);
+        this.contactMessages.set(data.contactMessages as Messages);
+        this.activeOpportunities.set(data.activeOpportunities as Opportunities);
+        this.closedOpportunities.set(data.closedOpportunities as Opportunities);
+      }
     );
 
     this.service.getContact(this.contactId).subscribe((data) => {
-      this.contactName = data.name;
-      this.contactData = data;
-      this.isLoading = false;
+      this.contactName.set(data.name);
+      this.contactData.set(data);
+      this.isLoading.set(false);
     })
   };
 
   refresh = () => {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.loadData();
   };
 

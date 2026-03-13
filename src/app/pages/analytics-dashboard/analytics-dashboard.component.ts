@@ -1,5 +1,4 @@
-import {Component, inject, OnInit} from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { map, share } from 'rxjs/operators';
 import { Observable, forkJoin } from 'rxjs';
 
@@ -32,6 +31,7 @@ type DataLoader = (startDate: string, endDate: string) => Observable<Object>;
 @Component({
   templateUrl: './analytics-dashboard.component.html',
   styleUrls: ['./analytics-dashboard.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ DataService ],
   imports: [
     DxScrollViewModule,
@@ -50,26 +50,31 @@ type DataLoader = (startDate: string, endDate: string) => Observable<Object>;
     RevenueTotalTickerComponent,
     ConversionTickerComponent,
     LeadsTickerComponent,
-    CommonModule,
   ],
 })
 export class AnalyticsDashboardComponent implements OnInit {
   private service = inject(DataService);
 
   analyticsPanelItems = analyticsPanelItems;
-  opportunities: SalesOrOpportunitiesByCategory = null;
-  sales: Sales = null;
-  salesByState: SalesByState = null;
-  salesByCategory: SalesByStateAndCity = null;
+  opportunities = signal<SalesOrOpportunitiesByCategory>(null);
+  sales = signal<Sales>(null);
+  salesByState = signal<SalesByState>(null);
+  salesByCategory = signal<SalesByStateAndCity>(null);
 
-  isLoading: boolean = true;
+  isLoading = signal(true);
 
   selectionChange(dates: Dates) {
     this.loadData(dates.startDate, dates.endDate);
   }
 
   loadData = (startDate: string, endDate: string) => {
-    this.isLoading = true;
+    this.isLoading.set(true);
+    const signalMap: Record<string, ReturnType<typeof signal>> = {
+      opportunities: this.opportunities,
+      sales: this.sales,
+      salesByCategory: this.salesByCategory,
+      salesByState: this.salesByState,
+    };
     const tasks: Observable<object>[] = [
       ['opportunities', this.service.getOpportunitiesByCategory],
       ['sales', this.service.getSales],
@@ -82,14 +87,14 @@ export class AnalyticsDashboardComponent implements OnInit {
       const loaderObservable = loader(startDate, endDate).pipe(share());
 
       loaderObservable.subscribe((result: DashboardData) => {
-        this[dataName] = result;
+        signalMap[dataName].set(result);
       });
 
       return loaderObservable;
     });
 
     forkJoin(tasks).subscribe(() => {
-      this.isLoading = false;
+      this.isLoading.set(false);
     });
   };
 

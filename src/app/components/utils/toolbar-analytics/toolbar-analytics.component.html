@@ -1,20 +1,22 @@
 <dx-toolbar class="theme-dependent">
   <dxi-item location="before">
-    <span class="toolbar-header">{{ titleText }}</span>
+    <span class="toolbar-header">{{ titleText() }}</span>
   </dxi-item>
 
-  <dxi-item *ngIf="panelItems" location="before">
+  @if (panelItems()) {
+  <dxi-item location="before">
     <dx-tabs
       secondary="secondary"
       keyExpr="key"
       [width]="(screen.xSmallScreenChanged | async) ? 150 : 'auto'"
       [showNavButtons]="false"
       [scrollByContent]="true"
-      [selectedItemKeys]="selectedItems"
-      [items]="panelItems"
+      [selectedItemKeys]="selectedItems()"
+      [items]="panelItems()"
       (onSelectionChanged)="selectionChange($event)"
     ></dx-tabs>
   </dxi-item>
+  }
 
   <dxi-item location="after" locateInMenu="auto">
     <dx-button

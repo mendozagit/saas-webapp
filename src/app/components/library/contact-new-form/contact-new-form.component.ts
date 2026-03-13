@@ -1,5 +1,4 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
   DxTextBoxModule,
   DxFormModule,
@@ -13,16 +12,16 @@ import { newContact } from 'src/app/types/contact';
 import { getSizeQualifier } from 'src/app/services/screen.service';
 
 @Component({
-    selector: 'contact-new-form',
-    templateUrl: './contact-new-form.component.html',
-    imports: [
-      DxTextBoxModule,
-      DxFormModule,
-      DxValidatorModule,
-      FormTextboxComponent,
-      FormPhotoUploaderComponent,
-      CommonModule,
-    ]
+  selector: 'contact-new-form',
+  templateUrl: './contact-new-form.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    DxTextBoxModule,
+    DxFormModule,
+    DxValidatorModule,
+    FormTextboxComponent,
+    FormPhotoUploaderComponent,
+  ]
 })
 
 export class ContactNewFormComponent {

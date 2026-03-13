@@ -1,7 +1,7 @@
 <div id="contact-form">
   <dx-validation-group>
     <toolbar-form
-      [isEditing]="isEditing"
+      [isEditing]="isEditing()"
       titleClass="dx-form-group-caption"
       (editingCancelled)="handleCancelClick()"
       (editModeToggled)="handleEditClick()"
@@ -9,18 +9,18 @@
     >
     </toolbar-form>
 
+    @if (contactData()) {
     <dx-form
-      *ngIf="contactData"
       class="form last plain-styled-form"
-      [formData]="contactData"
+      [formData]="contactData()"
       labelMode="floating"
-      [class.view-mode]="!isEditing"
+      [class.view-mode]="!isEditing()"
     >
       <dxi-item itemType="group" [colCount]="2">
         <dxo-col-count-by-screen [xs]="2"></dxo-col-count-by-screen>
         <dxi-item>
           <div *dxTemplate>
-            <form-photo [link]="contactData.image" [size]="184"></form-photo>
+            <form-photo [link]="contactData().image" [size]="184"></form-photo>
           </div>
         </dxi-item>
         <dxi-item itemType="group">
@@ -28,8 +28,8 @@
             <status-select-box
               *dxTemplate
               classList="contact-status"
-              [(value)]="contactData.status"
-              [readOnly]="!isEditing"
+              [(value)]="contactData().status"
+              [readOnly]="!isEditing()"
             ></status-select-box>
           </dxi-item>
 
@@ -37,8 +37,8 @@
             <form-textbox
               *dxTemplate
               label="First Name"
-              [(value)]="contactData.firstName"
-              [isEditing]="isEditing"
+              [(value)]="contactData().firstName"
+              [isEditing]="isEditing()"
             ></form-textbox>
           </dxi-item>
 
@@ -46,8 +46,8 @@
             <form-textbox
               *dxTemplate
               label="Last Name"
-              [(value)]="contactData.lastName"
-              [isEditing]="isEditing"
+              [(value)]="contactData().lastName"
+              [isEditing]="isEditing()"
             ></form-textbox>
           </dxi-item>
         </dxi-item>
@@ -56,8 +56,8 @@
           <form-textbox
             *dxTemplate
             label="Position"
-            [(value)]="contactData.position"
-            [isEditing]="isEditing"
+            [(value)]="contactData().position"
+            [isEditing]="isEditing()"
           ></form-textbox>
         </dxi-item>
 
@@ -65,8 +65,8 @@
           <form-textbox
             *dxTemplate
             label="Assigned to"
-            [(value)]="contactData.manager"
-            [isEditing]="isEditing"
+            [(value)]="contactData().manager"
+            [isEditing]="isEditing()"
           ></form-textbox>
         </dxi-item>
 
@@ -74,8 +74,8 @@
           <form-textbox
             *dxTemplate
             label="Company"
-            [(value)]="contactData.company"
-            [isEditing]="isEditing"
+            [(value)]="contactData().company"
+            [isEditing]="isEditing()"
           ></form-textbox>
         </dxi-item>
       </dxi-item>
@@ -86,8 +86,8 @@
           <form-textbox
             *dxTemplate
             label="Address"
-            [(value)]="contactData.address"
-            [isEditing]="isEditing"
+            [(value)]="contactData().address"
+            [isEditing]="isEditing()"
           ></form-textbox>
         </dxi-item>
 
@@ -95,8 +95,8 @@
           <form-textbox
             *dxTemplate
             label="City"
-            [(value)]="contactData.city"
-            [isEditing]="isEditing"
+            [(value)]="contactData().city"
+            [isEditing]="isEditing()"
           ></form-textbox>
         </dxi-item>
 
@@ -106,9 +106,9 @@
             label="State"
             stylingMode="filled"
             valueChangeEvent="keyup input change"
-            [(value)]="contactData.state.stateShort"
+            [(value)]="contactData().state.stateShort"
             [items]="usStates"
-            [readOnly]="!isEditing"
+            [readOnly]="!isEditing()"
             [searchEnabled]="true"
             [elementAttr]="{ class: 'form-editor' }"
           ></dx-select-box>
@@ -120,8 +120,8 @@
             label="Zip Code"
             stylingMode="filled"
             valueChangeEvent="keyup input change"
-            [(value)]="contactData.zipCode"
-            [readOnly]="!isEditing"
+            [(value)]="contactData().zipCode"
+            [readOnly]="!isEditing()"
             [elementAttr]="{ class: 'form-editor' }"
             [inputAttr]="{ class: 'form-editor-input' }"
           >
@@ -137,14 +137,14 @@
             <form-textbox
               mask="(000) 000-0000"
               label="Phone"
-              [(value)]="contactData.phone"
-              [isEditing]="isEditing"
+              [(value)]="contactData().phone"
+              [isEditing]="isEditing()"
               [validators]="[]"
             ></form-textbox>
             <dx-button
               class="form-item-button"
               stylingMode="outlined"
-              [visible]="!isEditing"
+              [visible]="!isEditing()"
               [text]="'Call'"
               [icon]="'tel'"
               [type]="'default'"
@@ -156,14 +156,14 @@
           <div *dxTemplate>
             <form-textbox
               label="Email"
-              [(value)]="contactData.email"
-              [isEditing]="isEditing"
+              [(value)]="contactData().email"
+              [isEditing]="isEditing()"
               [validators]="[{ type: 'email' }]"
             ></form-textbox>
             <dx-button
               class="form-item-button"
               stylingMode="outlined"
-              [visible]="!isEditing"
+              [visible]="!isEditing()"
               [text]="'Send Email'"
               [icon]="'email'"
               [type]="'default'"
@@ -172,11 +172,12 @@
         </dxi-item>
       </dxi-item>
     </dx-form>
+    }
   </dx-validation-group>
   <dx-load-panel
     container="#contact-form"
     [position]="{ of: '#contact-form' }"
-    [visible]="!contactData || isLoading"
+    [visible]="!contactData() || isLoading()"
     [showPane]="false"
   ></dx-load-panel>
 </div>

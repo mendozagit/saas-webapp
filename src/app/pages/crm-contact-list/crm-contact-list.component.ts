@@ -1,7 +1,6 @@
 import {
-  Component, ViewChild, inject,
+  ChangeDetectionStrategy, Component, ViewChild, inject, signal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import {
   DxButtonModule,
   DxDataGridModule,
@@ -35,6 +34,7 @@ type FilterContactStatus = ContactStatus | 'All';
 @Component({
   templateUrl: './crm-contact-list.component.html',
   styleUrls: ['./crm-contact-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [DataService],
   imports: [
     DxButtonModule,
@@ -46,7 +46,6 @@ type FilterContactStatus = ContactStatus | 'All';
     ContactNewFormComponent,
     FormPopupComponent,
     ContactStatusComponent,
-    CommonModule,
   ]
 })
 export class CrmContactListComponent {
@@ -60,25 +59,25 @@ export class CrmContactListComponent {
 
   filterStatusList = ['All', ...contactStatusList];
 
-  isPanelOpened = false;
+  isPanelOpened = signal(false);
 
-  isAddContactPopupOpened = false;
+  isAddContactPopupOpened = signal(false);
 
-  userId: number;
+  userId = signal<number>(undefined);
 
   dataSource = new DataSource<Contact[], string>({
     key: 'id',
     load: () => new Promise((resolve, reject) => {
       this.service.getContacts().subscribe({
-          next: (data: Contact[]) => resolve(data),
-          error: ({message}) => reject(message)
-        })
+        next: (data: Contact[]) => resolve(data),
+        error: ({message}) => reject(message)
+      })
     }),
   });
 
   addContact() {
-    this.isAddContactPopupOpened = true;
-  };
+    this.isAddContactPopupOpened.set(true);
+  }
 
   refresh = () => {
     this.dataGrid.instance.refresh();
@@ -87,13 +86,13 @@ export class CrmContactListComponent {
   rowClick(e: DxDataGridTypes.RowClickEvent) {
     const { data } = e;
 
-    this.userId = data.id;
-    this.isPanelOpened = true;
+    this.userId.set(data.id);
+    this.isPanelOpened.set(true);
   }
 
   onOpenedChange = (value: boolean) => {
     if (!value) {
-      this.userId = null;
+      this.userId.set(null);
     }
   };
 
@@ -142,9 +141,9 @@ export class CrmContactListComponent {
   onClickSaveNewContact = () => {
     const { firstName, lastName} = this.contactNewForm.getNewContactData();
     notify({
-        message: `New contact "${firstName} ${lastName}" saved`,
-        position: { at: 'bottom center', my: 'bottom center' }
-      },
-      'success');
+      message: `New contact "${firstName} ${lastName}" saved`,
+      position: { at: 'bottom center', my: 'bottom center' }
+    },
+    'success');
   };
 }

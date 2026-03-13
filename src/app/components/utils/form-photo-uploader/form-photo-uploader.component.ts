@@ -1,5 +1,4 @@
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { DxFileUploaderComponent } from 'devextreme-angular/ui/file-uploader';
 
 @Component({
@@ -7,11 +6,8 @@ import { DxFileUploaderComponent } from 'devextreme-angular/ui/file-uploader';
   template: `
     <div
       id="uploader"
-      [ngClass]="
-        isDropZoneActive
-          ? ['dx-theme-accent-as-border-color']
-          : ['dx-theme-border-color']
-      "
+      [class.dx-theme-accent-as-border-color]="isDropZoneActive()"
+      [class.dx-theme-border-color]="!isDropZoneActive()"
     >
       <span>Drag and drop a photo here or click the area to select it from a folder</span>
     </div>
@@ -50,16 +46,17 @@ import { DxFileUploaderComponent } from 'devextreme-angular/ui/file-uploader';
       }
     }
   `],
-  imports: [ CommonModule, DxFileUploaderComponent ],
+  imports: [ DxFileUploaderComponent ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormPhotoUploaderComponent {
-  isDropZoneActive = false;
+  isDropZoneActive = signal(false);
 
-  onDropZoneEnter(e) {
-    if (e.dropZoneElement.id === 'uploader') { this.isDropZoneActive = true; }
+  onDropZoneEnter(e: { dropZoneElement: HTMLElement }) {
+    if (e.dropZoneElement.id === 'uploader') { this.isDropZoneActive.set(true); }
   }
 
-  onDropZoneLeave(e) {
-    if (e.dropZoneElement.id === 'uploader') { this.isDropZoneActive = false; }
+  onDropZoneLeave(e: { dropZoneElement: HTMLElement }) {
+    if (e.dropZoneElement.id === 'uploader') { this.isDropZoneActive.set(false); }
   }
 }

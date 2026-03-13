@@ -1,5 +1,5 @@
 <div class="appointment-tooltip">
-  <div class="title">{{ selectedAppointmentData.text }}</div>
+  <div class="title">{{ selectedAppointmentData()?.text }}</div>
   <div class="content">
     <div class="date">
       <dx-button
@@ -9,9 +9,10 @@
         [activeStateEnabled]="false"
         [hoverStateEnabled]="false"
       ></dx-button>
-      {{ getTimeString | apply: selectedAppointmentData }}
+      {{ getTimeString | apply: selectedAppointmentData() }}
     </div>
-    <div *ngIf="selectedAppointmentData.description" class="description">
+    @if (selectedAppointmentData()?.description) {
+    <div class="description">
       <dx-button
         icon="textdocument"
         stylingMode="text"
@@ -19,8 +20,9 @@
         [activeStateEnabled]="false"
         [hoverStateEnabled]="false"
       ></dx-button>
-      {{ selectedAppointmentData.description }}
+      {{ selectedAppointmentData()?.description }}
     </div>
+    }
   </div>
   <div class="buttons">
     <dx-button
@@ -28,7 +30,7 @@
       text="Delete"
       type="danger"
       stylingMode="text"
-      (onClick)="clickDeleteAppointment.emit(selectedAppointmentData)"
+      (onClick)="clickDeleteAppointment.emit(selectedAppointmentData())"
     ></dx-button>
     <dx-button
       class="button-success"

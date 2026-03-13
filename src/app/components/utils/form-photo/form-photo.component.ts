@@ -1,30 +1,25 @@
-import { Component, ElementRef, inject, Input, OnInit } from '@angular/core';
-import { CommonModule } from "@angular/common";
-import { DxFileUploaderComponent } from "devextreme-angular";
+import { ChangeDetectionStrategy, Component, computed, ElementRef, inject, input } from '@angular/core';
+import { DxFileUploaderComponent } from 'devextreme-angular';
 
 @Component({
   selector: 'form-photo',
   templateUrl: './form-photo.component.html',
   styleUrls: ['./form-photo.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DxFileUploaderComponent,
-    CommonModule,
   ],
 })
-export class FormPhotoComponent implements OnInit {
-  @Input() link: string;
+export class FormPhotoComponent {
+  readonly link = input<string>();
 
-  @Input() editable = false;
+  readonly editable = input(false);
 
-  @Input() size = 124;
+  readonly size = input(124);
 
   private elRef = inject(ElementRef);
 
-  imageUrl: string;
+  readonly imageUrl = computed(() => `url('data:image/png;base64,${this.link()}')`);
 
   hostRef = this.elRef.nativeElement;
-
-  ngOnInit() {
-    this.imageUrl = `url('data:image/png;base64,${this.link}')`;
-  }
 }

@@ -1,7 +1,6 @@
 import {
-  Component, EventEmitter, Input, Output,
+  ChangeDetectionStrategy, Component, input, output,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { DxButtonModule } from 'devextreme-angular';
 import { ApplyPipeDirective } from "../../../pipes/apply.pipe";
 
@@ -9,18 +8,18 @@ import { ApplyPipeDirective } from "../../../pipes/apply.pipe";
   selector: 'scheduler-tooltip',
   templateUrl: './scheduler-tooltip.component.html',
   styleUrls: ['./scheduler-tooltip.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ApplyPipeDirective,
-    CommonModule,
     DxButtonModule,
   ],
 })
 export class SchedulerTooltipComponent {
-  @Input() selectedAppointmentData: Record<string, any>;
+  readonly selectedAppointmentData = input<Record<string, any>>();
 
-  @Output() clickDeleteAppointment = new EventEmitter<any>();
+  readonly clickDeleteAppointment = output<any>();
 
-  @Output() clickEditAppointment = new EventEmitter<any>();
+  readonly clickEditAppointment = output<void>();
 
   getTimeString = (selectedAppointmentData) => {
     const timeOptions = {

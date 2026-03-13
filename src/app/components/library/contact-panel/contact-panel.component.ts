@@ -1,16 +1,17 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   OnInit,
-  OnChanges,
   OnDestroy,
-  Output,
-  Input,
-  SimpleChanges,
-  EventEmitter,
   AfterViewChecked,
+  effect,
   inject,
+  input,
+  model,
+  output,
+  signal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import {
   DxAccordionModule,
@@ -38,6 +39,7 @@ import { Contact } from 'src/app/types/contact';
   selector: 'contact-panel',
   templateUrl: './contact-panel.component.html',
   styleUrls: ['./contact-panel.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [DataService],
   imports: [
     DxAccordionModule,
@@ -53,17 +55,15 @@ import { Contact } from 'src/app/types/contact';
     FormPhotoComponent,
     CardActivitiesComponent,
     ContactStatusComponent,
-    CommonModule,
+    CurrencyPipe,
   ]
 })
-export class ContactPanelComponent implements OnInit, OnChanges, AfterViewChecked, OnDestroy {
-  @Input() isOpened = false;
+export class ContactPanelComponent implements OnInit, AfterViewChecked, OnDestroy {
+  readonly isOpened = model(false);
 
-  @Input() userId: number;
+  readonly userId = input<number>();
 
-  @Output() isOpenedChange = new EventEmitter<boolean>();
-
-  @Output() pinnedChange = new EventEmitter<boolean>();
+  readonly pinnedChange = output<boolean>();
 
   private pinEventSubject = new Subject<boolean>();
 
@@ -77,13 +77,13 @@ export class ContactPanelComponent implements OnInit, OnChanges, AfterViewChecke
 
   contactData: Contact;
 
-  pinned = false;
+  readonly pinned = signal(false);
 
-  isLoading = true;
+  readonly isLoading = signal(true);
 
-  isEditing = false;
+  readonly isEditing = signal(false);
 
-  isPinEnabled = false;
+  readonly isPinEnabled = signal(false);
 
   userPanelSubscriptions: Subscription[] = [];
 
@@ -93,8 +93,15 @@ export class ContactPanelComponent implements OnInit, OnChanges, AfterViewChecke
       this
         .pinEventSubject
         .pipe(distinctUntilChanged())
-        .subscribe(this.pinnedChange)
+        .subscribe((val) => this.pinnedChange.emit(val))
     );
+
+    effect(() => {
+      const id = this.userId();
+      if (id) {
+        this.loadUserById(id);
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -102,15 +109,7 @@ export class ContactPanelComponent implements OnInit, OnChanges, AfterViewChecke
   }
 
   ngAfterViewChecked(): void {
-    this.pinEventSubject.next(this.pinned);
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    const { userId } = changes;
-
-    if (userId?.currentValue) {
-      this.loadUserById(userId.currentValue);
-    }
+    this.pinEventSubject.next(this.pinned());
   }
 
   ngOnDestroy(): void {
@@ -118,41 +117,40 @@ export class ContactPanelComponent implements OnInit, OnChanges, AfterViewChecke
   }
 
   loadUserById = (id: number) => {
-    this.isLoading = true;
+    this.isLoading.set(true);
 
     this.service.getContact(id).subscribe((data) => {
       this.formData = data;
       this.contactData = { ...this.formData };
-      this.isLoading = false;
-      this.isEditing = false;
+      this.isLoading.set(false);
+      this.isEditing.set(false);
     })
   };
 
   onClosePanel = () => {
-    this.isOpened = false;
-    this.pinned = false;
-    this.isOpenedChange.emit(this.isOpened);
+    this.isOpened.set(false);
+    this.pinned.set(false);
   };
 
   onPinClick = () => {
-    this.pinned = !this.pinned;
+    this.pinned.update((v) => !v);
   };
 
   onSaveClick = ({ validationGroup } : DxButtonTypes.ClickEvent) => {
     if (!validationGroup.validate().isValid) return;
     this.contactData = { ...this.formData };
-    this.isEditing = !this.isEditing;
+    this.isEditing.update((v) => !v);
   }
 
   calculatePin = () => {
-    this.isPinEnabled = this.screen.sizes['screen-large'] || this.screen.sizes['screen-medium'];
-    if (this.pinned && !this.isPinEnabled) {
-      this.pinned = false;
+    this.isPinEnabled.set(this.screen.sizes['screen-large'] || this.screen.sizes['screen-medium']);
+    if (this.pinned() && !this.isPinEnabled()) {
+      this.pinned.set(false);
     }
   };
 
   toggleEdit = () => {
-    this.isEditing = !this.isEditing;
+    this.isEditing.update((v) => !v);
   };
 
   cancelHandler() {

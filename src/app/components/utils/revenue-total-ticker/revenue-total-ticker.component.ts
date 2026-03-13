@@ -1,18 +1,16 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { Sales } from 'src/app/types/analytics';
 import { TickerCardComponent } from 'src/app/components/library/ticker-card/ticker-card.component';
 
 @Component({
   selector: 'revenue-total-ticker',
   templateUrl: 'revenue-total-ticker.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    CommonModule,
     TickerCardComponent,
   ],
 })
-
 export class RevenueTotalTickerComponent {
-  @Input() data: Sales = null;
+  readonly data = input<Sales>();
 }
 

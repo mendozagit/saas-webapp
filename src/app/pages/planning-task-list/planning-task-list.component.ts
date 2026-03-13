@@ -1,5 +1,5 @@
-import {Component, inject, OnInit, ViewChild} from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { DxButtonModule } from 'devextreme-angular/ui/button';
@@ -22,23 +22,23 @@ import { TaskListKanbanComponent } from 'src/app/components/library/task-list-ka
 import { TaskListGanttComponent } from 'src/app/components/library/task-list-gantt/task-list-gantt.component';
 
 @Component({
-    templateUrl: './planning-task-list.component.html',
-    styleUrls: ['./planning-task-list.component.scss'],
-    providers: [DataService],
-    imports: [
-      DxButtonModule,
-      DxDataGridModule,
-      DxTabsModule,
-      DxToolbarModule,
-      DxLoadPanelModule,
-      FormPopupComponent,
-      TaskFormComponent,
-      TaskListKanbanComponent,
-      TaskListGridComponent,
-      TaskListGanttComponent,
-
-      CommonModule,
-    ]
+  templateUrl: './planning-task-list.component.html',
+  styleUrls: ['./planning-task-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [DataService],
+  imports: [
+    DxButtonModule,
+    DxDataGridModule,
+    DxTabsModule,
+    DxToolbarModule,
+    DxLoadPanelModule,
+    FormPopupComponent,
+    TaskFormComponent,
+    TaskListKanbanComponent,
+    TaskListGridComponent,
+    TaskListGanttComponent,
+    AsyncPipe,
+  ]
 })
 export class PlanningTaskListComponent implements OnInit {
   @ViewChild('planningDataGrid', { static: false }) dataGrid: TaskListGridComponent;
@@ -61,15 +61,15 @@ export class PlanningTaskListComponent implements OnInit {
 
   taskPanelItems = taskPanelItems;
 
-  displayTaskComponent = this.taskPanelItems[0].text;
+  displayTaskComponent = signal(this.taskPanelItems[0].text);
 
-  selectedIndex = 0;
+  selectedIndex = signal(0);
 
-  isAddTaskPopupOpened = false;
+  isAddTaskPopupOpened = signal(false);
 
-  displayGrid = this.displayTaskComponent === this.taskPanelItems[0].text;
+  displayGrid = signal(true);
 
-  displayKanban = this.displayTaskComponent === this.taskPanelItems[1].text;
+  displayKanban = signal(false);
 
   taskCollections$: Observable<{ allTasks: Task[]; filteredTasks: Task[] }>;
 
@@ -94,8 +94,8 @@ export class PlanningTaskListComponent implements OnInit {
 
     this.route.queryParamMap.subscribe(params => {
       const viewParam = params.get('view');
-      if (viewParam && this.paramToView[viewParam] && this.paramToView[viewParam] !== this.displayTaskComponent) {
-        this.displayTaskComponent = this.paramToView[viewParam];
+      if (viewParam && this.paramToView[viewParam] && this.paramToView[viewParam] !== this.displayTaskComponent()) {
+        this.displayTaskComponent.set(this.paramToView[viewParam]);
         this.updateFlags();
       } else if (!viewParam) {
         this.updateQueryParam();
@@ -108,27 +108,27 @@ export class PlanningTaskListComponent implements OnInit {
   tabValueChange(e: DxTabsTypes.ItemClickEvent) {
     const { itemData } = e;
 
-    this.displayTaskComponent = itemData.text;
+    this.displayTaskComponent.set(itemData.text);
     this.updateFlags();
     this.updateQueryParam();
-  };
+  }
 
   addTask = () => {
-    this.isAddTaskPopupOpened = true;
+    this.isAddTaskPopupOpened.set(true);
   };
 
   onClickSaveNewTask = () => {
     notify({
-        message: `New task "${this.taskForm.getNewTaskData().text}" saved`,
-        position: { at: 'bottom center', my: 'bottom center' }
-      },
-      'success');
+      message: `New task "${this.taskForm.getNewTaskData().text}" saved`,
+      position: { at: 'bottom center', my: 'bottom center' }
+    },
+    'success');
   };
 
   refresh = () => {
-    if (this.displayGrid) {
+    if (this.displayGrid()) {
       this.dataGrid.refresh();
-    } else if (this.displayKanban) {
+    } else if (this.displayKanban()) {
       this.kanban.refresh();
     } else {
       this.gantt.refresh();
@@ -140,7 +140,7 @@ export class PlanningTaskListComponent implements OnInit {
   searchDataGrid = (e: DxTextBoxTypes.InputEvent) => this.dataGrid.search(e.component.option('text'));
 
   exportToPdf = () => {
-    if (this.displayGrid) {
+    if (this.displayGrid()) {
       this.dataGrid.onExportingToPdf();
     } else {
       this.gantt.onExporting();
@@ -150,14 +150,14 @@ export class PlanningTaskListComponent implements OnInit {
   exportDataGridToXSLX = () => this.dataGrid.onExportingToXLSX();
 
   private updateFlags() {
-    this.displayGrid = this.displayTaskComponent === this.taskPanelItems[0].text;
-    this.displayKanban = this.displayTaskComponent === this.taskPanelItems[1].text;
-    const idx = this.taskPanelItems.findIndex(i => i.text === this.displayTaskComponent);
-    this.selectedIndex = idx >= 0 ? idx : 0;
+    this.displayGrid.set(this.displayTaskComponent() === this.taskPanelItems[0].text);
+    this.displayKanban.set(this.displayTaskComponent() === this.taskPanelItems[1].text);
+    const idx = this.taskPanelItems.findIndex(i => i.text === this.displayTaskComponent());
+    this.selectedIndex.set(idx >= 0 ? idx : 0);
   }
 
   private updateQueryParam() {
-    const qp = this.viewToParam[this.displayTaskComponent];
+    const qp = this.viewToParam[this.displayTaskComponent()];
     if (qp) {
       this.router.navigate([], { queryParams: { view: qp }, queryParamsHandling: 'merge', replaceUrl: true });
     }

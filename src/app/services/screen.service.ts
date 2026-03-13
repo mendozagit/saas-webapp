@@ -1,7 +1,7 @@
-import { Output, Injectable, EventEmitter, inject } from '@angular/core';
-import { BreakpointObserver } from '@angular/cdk/layout';
+import { Injectable, inject } from '@angular/core';
+import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 
-import { ReplaySubject, Subscription } from 'rxjs';
+import { ReplaySubject, Subject, Subscription } from 'rxjs';
 
 const Breakpoints = {
   XSmall: '(max-width: 575.98px)',
@@ -18,15 +18,15 @@ export function getSizeQualifier(width: number) {
   return 'lg';
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class ScreenService {
-  @Output() changed = new EventEmitter();
+  readonly changed = new Subject<BreakpointState>();
 
-  @Output() xSmallScreenChanged = new ReplaySubject<boolean>();
+  readonly xSmallScreenChanged = new ReplaySubject<boolean>(1);
 
-  @Output() smallScreenChanged = new ReplaySubject<boolean>();
+  readonly smallScreenChanged = new ReplaySubject<boolean>(1);
 
-  @Output() screenChanged = new ReplaySubject<{ isXSmall: boolean, isSmall: boolean, isMedium: boolean, isLarge: boolean, isXLarge: boolean }>();
+  readonly screenChanged = new ReplaySubject<{ isXSmall: boolean, isSmall: boolean, isMedium: boolean, isLarge: boolean, isXLarge: boolean }>(1);
 
   private breakpointObserver$ = inject(BreakpointObserver);
 

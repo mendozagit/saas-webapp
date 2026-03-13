@@ -15,12 +15,12 @@
         </div>
         <div class="calendar">
           <dx-calendar
-            [value]="currentDate"
+            [value]="currentDate()"
             (onValueChanged)="onCalendarDateChange($event.value)"
           ></dx-calendar>
         </div>
         <calendar-list
-          [dataSource]="listDataSource"
+          [dataSource]="listDataSource()"
           (listSelectionChanged)="calendarListChanged($event)"
         ></calendar-list>
       </div>
@@ -32,9 +32,9 @@
         height="inherit"
         [adaptivityEnabled]="!!(screen.screenChanged | async)?.isXSmall"
         [allDayPanelMode]="'allDay'"
-        [dataSource]="tasks"
-        [currentView]="currentView"
-        [currentDate]="getSchedulerCurrentDate | apply: currentDate"
+        [dataSource]="tasks()"
+        [currentView]="currentView()"
+        [currentDate]="getSchedulerCurrentDate | apply: currentDate()"
         [startDayHour]="4"
         [showCurrentTimeIndicator]="false"
         (onOptionChanged)="onSchedulerOptionChanged($event)"
@@ -45,7 +45,7 @@
         <dxi-resource
           fieldExpr="calendarId"
           label="Calendar"
-          [dataSource]="resourcesList"
+          [dataSource]="resourcesList()"
         >
         </dxi-resource>
         <dxi-view type="day"></dxi-view>
@@ -53,25 +53,26 @@
         <dxi-view type="month"></dxi-view>
         <dxi-view type="agenda"></dxi-view>
       </dx-scheduler>
+      @if (selectedAppointment()) {
       <dx-tooltip
         #tooltipRef
-        *ngIf="selectedAppointment"
         showEvent="click"
-        [target]="selectedAppointment?.target"
+        [target]="selectedAppointment()?.target"
         [position]="
           getTooltipPosition
             | apply
-              : selectedAppointment
-              : isRightPanelOpen
+              : selectedAppointment()
+              : isRightPanelOpen()
               : (screen.screenChanged | async)?.isSmall
         "
       >
         <scheduler-tooltip
-          [selectedAppointmentData]="selectedAppointment?.data"
+          [selectedAppointmentData]="selectedAppointment()?.data"
           (clickEditAppointment)="editSelectedAppointment()"
           (clickDeleteAppointment)="deleteSelectedAppointment($event)"
         ></scheduler-tooltip>
       </dx-tooltip>
+      }
       <dx-speed-dial-action
         icon="add"
         [visible]="(screen.screenChanged | async)?.isXSmall"
@@ -81,16 +82,16 @@
 
     <right-side-panel
       class="right-side-panel"
-      [isOpened]="isRightPanelOpen"
-      [showOpenButton]="currentView === 'month'"
+      [isOpened]="isRightPanelOpen()"
+      [showOpenButton]="currentView() === 'month'"
       [title]="
-        selectedAppointment?.data.startDate || currentDate | date: 'EE, MMMM d'
+        selectedAppointment()?.data.startDate || currentDate() | date: 'EE, MMMM d'
       "
-      (openedChange)="toggleRightPanelOpen($event)"
+      (isOpenedChange)="toggleRightPanelOpen($event)"
     >
       <agenda
-        [items]="agendaItems"
-        [resources]="resourcesList"
+        [items]="agendaItems()"
+        [resources]="resourcesList()"
         (clickAppointment)="showAppointmentTooltip($event)"
       ></agenda>
     </right-side-panel>

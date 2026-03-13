@@ -1,5 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule, formatDate } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { formatDate } from '@angular/common';
 
 import { Observable, forkJoin } from 'rxjs';
 import { share } from 'rxjs/operators';
@@ -25,6 +25,7 @@ import { Sale, SalesOrOpportunitiesByCategory } from 'src/app/types/analytics';
 @Component({
   templateUrl: './analytics-sales-analysis.component.html',
   styleUrls: ['./analytics-sales-analysis.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ DataService ],
   imports: [
     DxScrollViewModule,
@@ -36,7 +37,6 @@ import { Sale, SalesOrOpportunitiesByCategory } from 'src/app/types/analytics';
     DxDropDownButtonModule,
     DxRangeSelectorModule,
     ToolbarAnalyticsComponent,
-    CommonModule,
     SalesByRangeCardComponent,
     SalesPerformanceCardComponent,
     SalesRangeCardComponent,
@@ -47,58 +47,62 @@ export class AnalyticsSalesAnalysisComponent implements OnInit {
 
   groupByPeriods = ['Day', 'Month'];
 
-  visualRange: unknown = {};
+  visualRange = signal<unknown>({});
 
-  isLoading: boolean = true;
+  isLoading = signal(true);
 
-  sales: Sale[] = null;
-  salesByCategory: SalesOrOpportunitiesByCategory = null;
-  salesByDateAndCategory: Sale[] = null;
+  sales = signal<Sale[]>(null);
+  salesByCategory = signal<SalesOrOpportunitiesByCategory>(null);
+  salesByDateAndCategory = signal<Sale[]>(null);
 
-  customRange = analyticsPanelItems[5].value.split('/').map((d) => new Date(d));
+  customRange = signal(analyticsPanelItems[5].value.split('/').map((d) => new Date(d)));
 
-  onRangeChanged = ({value: dates}) => {
+  onRangeChanged = ({value: dates}: {value: Date[]}) => {
     const [startDate, endDate] = dates.map((date) => formatDate(date, 'yyyy-MM-dd', 'en'));
 
-    this.isLoading = true;
+    this.isLoading.set(true);
 
     this.service.getSalesByCategory(startDate, endDate)
       .subscribe((result) => {
-        this.salesByCategory = result;
-        this.isLoading = false;
+        this.salesByCategory.set(result);
+        this.isLoading.set(false);
       });
   };
 
   selectionChange({item: period}: DxDropDownButtonTypes.SelectionChangedEvent) {
-    this.isLoading = true;
+    this.isLoading.set(true);
 
     this.service.getSalesByOrderDate(period.toLowerCase())
       .subscribe((result) => {
-        this.salesByDateAndCategory = result;
-        this.isLoading = false;
+        this.salesByDateAndCategory.set(result);
+        this.isLoading.set(false);
       })
   }
 
   loadData = (groupBy: string) => {
     const [startDate, endDate] = analyticsPanelItems[4].value.split('/');
+    const signalMap: Record<string, ReturnType<typeof signal>> = {
+      sales: this.sales,
+      salesByDateAndCategory: this.salesByDateAndCategory,
+    };
     const tasks = [
       ['sales', this.service.getSales(startDate, endDate)],
       ['salesByDateAndCategory', this.service.getSalesByOrderDate(groupBy)],
     ].map(([dataName, loader]: [string, Observable<Sale[]>]) => {
-        const task = loader.pipe(share());
-        task.subscribe((data) => this[dataName] = data);
-        return task;
-      }
+      const task = loader.pipe(share());
+      task.subscribe((data) => signalMap[dataName].set(data));
+      return task;
+    }
     );
 
     forkJoin(tasks).subscribe(() => {
-      this.isLoading = false;
+      this.isLoading.set(false);
     });
   };
 
   ngOnInit(): void {
-    this.visualRange = this.customRange;
-    this.onRangeChanged({ value: this.customRange });
+    this.visualRange.set(this.customRange());
+    this.onRangeChanged({ value: this.customRange() });
     this.loadData(this.groupByPeriods[1].toLowerCase());
   }
 }

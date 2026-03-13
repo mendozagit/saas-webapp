@@ -1,7 +1,11 @@
 import {
-  Component, EventEmitter, inject, Input, Output,
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  input,
+  model,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { LowerCasePipe } from '@angular/common';
 import { DxSelectBoxModule, DxTextBoxModule } from 'devextreme-angular';
 import { EditorStyle, LabelMode } from 'devextreme-angular/common';
 import { contactStatusList } from 'src/app/types/contact';
@@ -12,36 +16,29 @@ import { ThemeService } from 'src/app/services/theme.service';
   selector: 'status-select-box',
   templateUrl: 'status-select-box.component.html',
   styleUrls: ['./status-select-box.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DxSelectBoxModule,
     DxTextBoxModule,
     ContactStatusComponent,
-    CommonModule
+    LowerCasePipe,
   ],
 })
 export class StatusSelectBoxComponent {
-  @Input() value: string;
+  readonly value = model<string>();
 
-  @Input() label = '';
+  readonly label = input('');
 
-  @Input() items = contactStatusList;
+  readonly items = input(contactStatusList);
 
-  @Input() readOnly = false;
+  readonly readOnly = input(false);
 
-  @Input() stylingMode: EditorStyle = 'filled';
-
-  @Input() labelMode: LabelMode;
-
-  @Input() classList: string;
-
-  @Output() valueChange = new EventEmitter<string>();
+  readonly stylingMode = input<EditorStyle>('filled');
 
   private theme = inject(ThemeService);
 
-  constructor() {
-    if(this.theme.isFluent()) {
-      this.labelMode = 'outside';
-    }
-  }
+  readonly labelMode = input<LabelMode>(this.theme.isFluent() ? 'outside' : undefined);
+
+  readonly classList = input<string>();
 }
 

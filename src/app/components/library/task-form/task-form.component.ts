@@ -1,5 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, effect, inject, input, signal } from '@angular/core';
 import {
   DxButtonModule,
   DxFormModule,
@@ -26,6 +25,7 @@ import { ToolbarFormComponent } from 'src/app/components/utils/toolbar-form/tool
   selector: 'task-form',
   templateUrl: './task-form.component.html',
   styleUrls: ['./task-form.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DxButtonModule,
     DxFormModule,
@@ -39,21 +39,20 @@ import { ToolbarFormComponent } from 'src/app/components/utils/toolbar-form/tool
     StatusIndicatorComponent,
     FormDateboxComponent,
     ToolbarFormComponent,
-    CommonModule,
   ],
 })
-export class TaskFormComponent implements OnInit {
-  @Input() task: Task;
+export class TaskFormComponent {
+  readonly task = input<Task>();
 
-  @Input() isLoading: boolean = false;
+  readonly isLoading = input(false);
 
-  @Input() isCreateMode: boolean = false;
+  readonly isCreateMode = input(false);
 
   protected screen = inject(ScreenService);
 
   savedData: Task = null;
 
-  isEditing = false;
+  readonly isEditing = signal(false);
 
   statusList = taskStatusList;
 
@@ -61,24 +60,30 @@ export class TaskFormComponent implements OnInit {
 
   getSizeQualifier = getSizeQualifier;
 
-  ngOnInit() {
-    this.isEditing = this.isCreateMode;
+  constructor() {
+    effect(() => {
+      if (this.isCreateMode()) {
+        this.isEditing.set(true);
+      }
+    });
   }
+
   handleEditClick = () => {
-    this.savedData = { ...this.task }
-    this.isEditing = true;
+    this.savedData = { ...this.task() }
+    this.isEditing.set(true);
   };
 
   handleSaveClick = ({ validationGroup }: DxButtonTypes.ClickEvent) => {
     if(!validationGroup.validate().isValid) return;
     this.savedData = null;
-    this.isEditing = false;
+    this.isEditing.set(false);
   };
 
   handleCancelClick = () => {
-    this.task = { ...this.savedData };
-    this.isEditing = false;
+    // Task is an input signal, so we restore via savedData reference
+    Object.assign(this.task(), this.savedData);
+    this.isEditing.set(false);
   };
 
-  getNewTaskData = ()=> ({ ...this.task });
+  getNewTaskData = ()=> ({ ...this.task() });
 }

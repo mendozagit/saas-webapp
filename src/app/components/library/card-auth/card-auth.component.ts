@@ -1,16 +1,13 @@
-import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-card-auth',
   templateUrl: './card-auth.component.html',
   styleUrls: ['./card-auth.component.scss'],
-  imports: [ CommonModule ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CardAuthComponent {
-  @Input()
-  title!: string;
+  readonly title = input.required<string>();
 
-  @Input()
-  description!: string;
+  readonly description = input('');
 }

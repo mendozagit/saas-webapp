@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { CurrencyPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { Sales, SalesOrOpportunitiesByCategory } from '../../../types/analytics';
 import { ApplyPipeDirective } from "src/app/pipes/apply.pipe";
 
@@ -7,26 +7,27 @@ import { ApplyPipeDirective } from "src/app/pipes/apply.pipe";
   selector: 'ticker-card',
   templateUrl: './ticker-card.component.html',
   styleUrls: ['./ticker-card.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ApplyPipeDirective,
-    CommonModule,
+    CurrencyPipe,
   ],
 })
 
 export class TickerCardComponent {
-  @Input() titleText: string;
+  readonly titleText = input<string>();
 
-  @Input() data: SalesOrOpportunitiesByCategory | Sales | null = null;
+  readonly data = input<SalesOrOpportunitiesByCategory | Sales | null>(null);
 
-  @Input() total: string | null = null;
+  readonly total = input<string | null>(null);
 
-  @Input() percentage: number;
+  readonly percentage = input<number>();
 
-  @Input() icon: string;
+  readonly icon = input<string>();
 
-  @Input() tone?: 'warning' | 'info';
+  readonly tone = input<'warning' | 'info'>();
 
-  @Input() contentClass: string | null = null;
+  readonly contentClass = input<string | null>(null);
 
   getTotal(data: Array<{value?: number, total?: number}> ): number {
     return (data || []).reduce((total, item) => total + (item.value || item.total), 0);
@@ -36,6 +37,6 @@ export class TickerCardComponent {
     return Math.abs(value);
   }
 
-  getIconClass = () => this.tone || (this.percentage > 0 ? 'positive' : 'negative');
+  getIconClass = () => this.tone() || (this.percentage() > 0 ? 'positive' : 'negative');
 }
 

@@ -2,7 +2,7 @@
   id="tasks-grid"
   class="theme-dependent"
   height="100%"
-  [dataSource]="tasks"
+  [dataSource]="tasks()"
   (onRowClick)="navigateToDetails($event)"
   (onEditingStart)="toogleUseNavigation()"
   (onEditCanceled)="toogleUseNavigation()"

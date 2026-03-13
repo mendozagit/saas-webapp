@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { DxButtonModule, DxButtonTypes } from 'devextreme-angular/ui/button';
 import { ThemeService } from '../../../services/theme.service';
 
@@ -8,18 +8,17 @@ import { ThemeService } from '../../../services/theme.service';
   styleUrls: ['./login-oauth.component.scss'],
   imports: [
     DxButtonModule
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginOauthComponent {
   private themeService = inject(ThemeService);
 
-  btnStylingMode: DxButtonTypes.ButtonStyle;
+  readonly btnStylingMode = signal<DxButtonTypes.ButtonStyle>('contained');
 
   constructor() {
     this.themeService.isDark.subscribe((value: boolean) => {
-      this.btnStylingMode = value ? 'outlined' : 'contained';
+      this.btnStylingMode.set(value ? 'outlined' : 'contained');
     });
   }
-
-
 }

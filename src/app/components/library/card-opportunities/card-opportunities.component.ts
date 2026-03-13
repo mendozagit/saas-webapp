@@ -1,7 +1,6 @@
 import {
-  Component, Input, OnChanges, SimpleChanges,
+  ChangeDetectionStrategy, Component, computed, input,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import {
   DxButtonModule,
   DxLoadPanelModule,
@@ -17,20 +16,13 @@ import { OpportunityTileComponent } from 'src/app/components/utils/opportunity-t
     DxButtonModule,
     DxLoadPanelModule,
     OpportunityTileComponent,
-    CommonModule,
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CardOpportunitiesComponent implements OnChanges {
-  @Input() openedOpportunities: Opportunity[];
+export class CardOpportunitiesComponent {
+  readonly openedOpportunities = input<Opportunity[]>();
 
-  @Input() closedOpportunities: Opportunity[];
+  readonly closedOpportunities = input<Opportunity[]>();
 
-  isLoading = true;
-
-  ngOnChanges(changes: SimpleChanges) {
-    const isLoadActive = !changes.openedOpportunities?.currentValue;
-    const isLoadClosed = !changes.closedOpportunities?.currentValue;
-
-    this.isLoading = isLoadActive || isLoadClosed;
-  }
+  readonly isLoading = computed(() => !this.openedOpportunities() || !this.closedOpportunities());
 }

@@ -1,5 +1,4 @@
-import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { DxLoadPanelModule } from 'devextreme-angular/ui/load-panel';
 import { PositionConfig } from 'devextreme/animation/position';
 import { CardMenuComponent } from '../card-menu/card-menu.component';
@@ -10,18 +9,18 @@ import { CardMenuComponent } from '../card-menu/card-menu.component';
   imports: [
     DxLoadPanelModule,
     CardMenuComponent,
-    CommonModule,
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
 export class CardAnalyticsComponent {
-  @Input() titleText: string;
+  readonly titleText = input<string>();
 
-  @Input() contentClass: string;
+  readonly contentClass = input<string>();
 
-  @Input() isMenuVisible = true;
+  readonly isMenuVisible = input(true);
 
-  @Input() isLoading = false;
+  readonly isLoading = input(false);
 
   menuItems: Array<{ text: string }> = [
     { text: 'Configure' },

@@ -1,5 +1,5 @@
-import {Component, inject, OnInit} from '@angular/core';
-import { CommonModule, Location } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import {
   DxButtonModule,
@@ -24,6 +24,7 @@ const DEFAULT_TASK_ID = 1;
 @Component({
   templateUrl: './planning-task-details.component.html',
   styleUrls: ['./planning-task-details.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ DataService ],
   imports: [
     DxButtonModule,
@@ -37,7 +38,6 @@ const DEFAULT_TASK_ID = 1;
     CardMessagesComponent,
     TaskFormComponent,
     DxScrollViewModule,
-    CommonModule,
   ]
 })
 export class PlanningTaskDetailsComponent implements OnInit {
@@ -47,24 +47,24 @@ export class PlanningTaskDetailsComponent implements OnInit {
 
   private location = inject(Location);
 
-  task: Task;
+  task = signal<Task>(undefined);
 
-  taskId: number;
+  taskId = signal<number>(undefined);
 
-  taskName = 'Loading...';
+  taskName = signal('Loading...');
 
-  isLoading = false;
+  isLoading = signal(false);
 
   constructor() {
     const id = parseInt(this.route.snapshot.queryParamMap.get('id'), 10);
-    this.taskId = id || DEFAULT_TASK_ID;
+    this.taskId.set(id || DEFAULT_TASK_ID);
   }
 
   loadData = () => {
-    this.service.getTask(this.taskId).subscribe((data) => {
-      this.task = data;
-      this.taskName = data.text;
-      this.isLoading = false;
+    this.service.getTask(this.taskId()).subscribe((data) => {
+      this.task.set(data);
+      this.taskName.set(data.text);
+      this.isLoading.set(false);
     });
   };
 
@@ -73,7 +73,7 @@ export class PlanningTaskDetailsComponent implements OnInit {
   }
 
   refresh = () => {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.loadData();
   }
 

@@ -1,5 +1,4 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { SalesOrOpportunitiesByCategory } from 'src/app/types/analytics';
 import { TickerCardComponent } from 'src/app/components/library/ticker-card/ticker-card.component';
 
@@ -7,11 +6,11 @@ import { TickerCardComponent } from 'src/app/components/library/ticker-card/tick
   selector: 'opportunities-ticker',
   templateUrl: 'opportunities-ticker.component.html',
   imports: [
-    CommonModule,
     TickerCardComponent,
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
 export class OpportunitiesTickerComponent {
-  @Input() data: SalesOrOpportunitiesByCategory = null;
+  readonly data = input<SalesOrOpportunitiesByCategory | null>(null);
 }

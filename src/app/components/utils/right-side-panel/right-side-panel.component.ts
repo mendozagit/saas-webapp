@@ -1,50 +1,47 @@
 import {
+  ChangeDetectionStrategy,
   Component,
-  Output,
-  Input,
-  EventEmitter, HostBinding, inject,
+  input,
+  model,
+  signal,
+  inject,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { DxButtonComponent } from 'devextreme-angular';
-import {DataService, ScreenService} from 'src/app/services';
+import { DataService, ScreenService } from 'src/app/services';
 
 @Component({
   selector: 'right-side-panel',
   templateUrl: './right-side-panel.component.html',
   styleUrls: ['./right-side-panel.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [DataService],
   imports: [
     DxButtonComponent,
-    CommonModule,
   ],
+  host: {
+    '[class.overlapping]': '!isLarge()',
+    '[class.closed-state-hidden]': '!showOpenButton()',
+    '[class.open]': 'isOpened()',
+  },
 })
 export class RightSidePanelComponent {
-  @Input() isOpened = false;
+  readonly isOpened = model(false);
 
-  @Input() showOpenButton = true;
+  readonly showOpenButton = input(true);
 
-  @Input() title = '';
-
-  @Output() openedChange = new EventEmitter<boolean>();
-
-  @HostBinding('class.overlapping') get overlapping() { return !this.isLarge; };
-
-  @HostBinding('class.closed-state-hidden') get closedStateHidden() { return !this.showOpenButton; };
-
-  @HostBinding('class.open') get open() { return this.isOpened; };
+  readonly title = input('');
 
   private screen = inject(ScreenService);
 
-  isLarge = this.screen.sizes['screen-large'];
+  readonly isLarge = signal(this.screen.sizes['screen-large']);
 
   constructor() {
     this.screen.screenChanged.subscribe(({isLarge, isXLarge}) => {
-      this.isLarge = isLarge || isXLarge;
+      this.isLarge.set(isLarge || isXLarge);
     });
   }
 
   toggleOpen = () => {
-    this.isOpened = !this.isOpened;
-    this.openedChange.emit(this.isOpened);
+    this.isOpened.update(v => !v);
   };
 }

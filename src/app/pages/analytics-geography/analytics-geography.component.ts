@@ -1,7 +1,6 @@
 import {
-  Component, OnInit, OnDestroy, inject,
+  ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, signal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 
 import { DxPieChartModule } from 'devextreme-angular/ui/pie-chart';
@@ -23,6 +22,7 @@ import { SalesByState, SalesByStateAndCity } from 'src/app/types/analytics';
 @Component({
   templateUrl: './analytics-geography.component.html',
   styleUrls: ['./analytics-geography.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ DataService ],
   imports: [
     DxScrollViewModule,
@@ -36,7 +36,6 @@ import { SalesByState, SalesByStateAndCity } from 'src/app/types/analytics';
     RevenueAnalysisByStatesCardComponent,
     SalesMapCardComponent,
     RevenueSnapshotByStatesCardComponent,
-    CommonModule,
   ]
 })
 export class AnalyticsGeographyComponent implements OnInit, OnDestroy {
@@ -44,15 +43,15 @@ export class AnalyticsGeographyComponent implements OnInit, OnDestroy {
 
   analyticsPanelItems = analyticsPanelItems;
 
-  salesByStateAndCity: SalesByStateAndCity;
+  salesByStateAndCity = signal<SalesByStateAndCity>(undefined);
 
-  salesByState: SalesByState;
+  salesByState = signal<SalesByState>(undefined);
 
-  salesByStateMarkers;
+  salesByStateMarkers = signal<unknown>(undefined);
 
   subscription: Subscription = new Subscription();
 
-  isLoading = false;
+  isLoading = signal(false);
 
   ngOnInit(): void {
     const dates = analyticsPanelItems[4].value.split('/');
@@ -69,7 +68,7 @@ export class AnalyticsGeographyComponent implements OnInit, OnDestroy {
   }
 
   createMapCoords(coords: string) {
-    let resultCoords = [];
+    let resultCoords: number[] = [];
 
     coords.split(', ').forEach((coord) => {
       resultCoords.push(parseFloat(coord));
@@ -79,14 +78,15 @@ export class AnalyticsGeographyComponent implements OnInit, OnDestroy {
   }
 
   loadData = (startDate: string, endDate: string) => {
-    this.isLoading = true;
+    this.isLoading.set(true);
 
     this.service.getSalesByStateAndCity(startDate, endDate).subscribe((data: SalesByStateAndCity) => {
-      this.salesByStateAndCity = data;
-      this.salesByState = this.service.getSalesByState(data);
-      this.salesByStateMarkers = {
+      this.salesByStateAndCity.set(data);
+      const salesByState = this.service.getSalesByState(data);
+      this.salesByState.set(salesByState);
+      this.salesByStateMarkers.set({
         type: 'StateCollection',
-        features: this.salesByState.map((item) => ({
+        features: salesByState.map((item) => ({
           type: 'State',
           geometry: {
             type: 'Point',
@@ -98,9 +98,9 @@ export class AnalyticsGeographyComponent implements OnInit, OnDestroy {
             tooltip: `<b>${item.stateName}</b>\n${item.total}K`,
           },
         })),
-      };
+      });
 
-      this.isLoading = false;
+      this.isLoading.set(false);
     });
   };
 }
