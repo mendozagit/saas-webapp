@@ -1,58 +1,42 @@
-# DevExtreme UI Template Gallery
+# SaaS WebApp
 
-This repository includes responsive UI Templates for the most popular UI/UX patterns in web LOB applications. These templates are available for Angular, React, and Vue.
+Angular 20+ application built with DevExtreme UI components. It provides responsive UI templates for common LOB (Line of Business) patterns including CRM, analytics dashboards, planning, and user management.
 
-![DevExtreme UI Template Gallery](/images/ui-template-gallery.png)
+## Prerequisites
 
-Take a look at the **online** gallery here:
+- Node.js 18+
+- npm 9+
+- **A valid [DevExtreme license](https://js.devexpress.com/Licensing/)** is required to use the DevExtreme components in this project. [Free trial available](https://js.devexpress.com/Buy/).
 
-|         | Material | Fluent | Generic |
-|---------|:--------:|:------:|:-------:|
-| **Angular** | [x](https://devexpress.github.io/devextreme-ui-template-gallery/material.blue.light.compact/angular/default/#/crm-contact-list) | [x](https://devexpress.github.io/devextreme-ui-template-gallery/fluent.blue.light/angular/default/#/crm-contact-list) | [x](https://devexpress.github.io/devextreme-ui-template-gallery/generic.light.compact/angular/default/#/crm-contact-list) |
-| **React** | [x](https://devexpress.github.io/devextreme-ui-template-gallery/material.blue.light.compact/react/default/#/crm-contact-list) | [x](https://devexpress.github.io/devextreme-ui-template-gallery/fluent.blue.light/react/default/#/crm-contact-list) | [x](https://devexpress.github.io/devextreme-ui-template-gallery/generic.light.compact/react/default/#/crm-contact-list) |
-| **Vue** | [x](https://devexpress.github.io/devextreme-ui-template-gallery/material.blue.light.compact/vue/default/#/crm-contact-list) | [x](https://devexpress.github.io/devextreme-ui-template-gallery/fluent.blue.light/vue/default/#/crm-contact-list) | [x](https://devexpress.github.io/devextreme-ui-template-gallery/generic.light.compact/vue/default/#/crm-contact-list) |
+## Tech Stack
 
-Use the left menu to navigate through the views.
-
-The UI Templates have responsive layouts with DevExtreme UI components. Note that the components use sample data entities without any business logic. You can use these UI Templates in your project and adapt them to your specific business requirements.
-
-## License ##
-
-**DevExtreme UI Template Gallery is released as a MIT-licensed (free and open-source) add-on to DevExtreme.**
-
-Familiarize yourself with the [DevExtreme License](https://js.devexpress.com/Licensing/). [Free trial is available!](http://js.devexpress.com/Buy/)
-
+- **Angular** ~20.3
+- **DevExtreme** 25.2 (`devextreme`, `devextreme-angular`)
+- **TypeScript** ~5.8
+- **RxJS** ^7.8
 
 ## Get Started
 
-To run these UI templates on your machine, clone this repository and run the following commands in the root folder:
+```bash
+npm install
+npm start
+```
 
-### Angular
+The app will be available at `http://localhost:4200`.
 
-    npm install
-    cd packages/angular
-    npm run start
+## Project Structure
 
-### React
+```
+src/
+  app/
+    components/   # Reusable UI components
+    layouts/      # Application layouts
+    pages/        # Route-level page components
+    services/     # Angular services
+    types/        # TypeScript type definitions
+    theme/        # Theme styles and variables
+```
 
-    npm install
-    cd packages/react
-    npm start
+## License
 
-### Vue
-
-    npm install
-    cd packages/vue
-    npm run serve
-
-Open the application on the local server.
-
-## How It is Organized
-
-Navigate to the folders linked below to get the code for each template.
-
-- [Angular](packages/angular/src/app/pages/)
-
-- [React](packages/react/src/pages/) 
-
-- [Vue](packages/vue/src/pages/)
+This project depends on **DevExtreme**, which requires a commercial license from DevExpress. Review the [DevExtreme License Agreement](https://js.devexpress.com/Licensing/) before using this project in production.
