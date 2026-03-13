@@ -1,6 +1,6 @@
 # SaaS WebApp
 
-An Angular 20 frontend for building multi-tenant SaaS products. Built on top of [devextreme-ui-gallery](https://github.com/DevExpress/devextreme-ui-template-gallery) and redesigned to cover real-world enterprise needs out of the box.
+An Angular 20 frontend for building multi-tenant SaaS products. Built on top of devextreme-ui-gallery and redesigned to cover real-world enterprise needs out of the box.
 
 ![SaaS WebApp](/images/ui-template-gallery.png)
 
