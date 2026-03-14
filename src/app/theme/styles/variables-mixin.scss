@@ -37,6 +37,9 @@ $theme-mode: null !default;
   @if $theme-mode == "light" {
     // layout-body (dx-drawer) background — #FAFAFA is too close to white, darken it
     --background-color: #E0E0E0;
+    --side-panel-item-hover-bg: #E0E0E0;
+    --side-panel-item-selected-bg: #E0E0E0;
+    --side-panel-item-selected-hover-bg: #E0E0E0;
   }
 
   --border-color: var(--dx-color-border);
