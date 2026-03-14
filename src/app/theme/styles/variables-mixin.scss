@@ -34,6 +34,11 @@ $theme-mode: null !default;
     --card-background: var(--base-bg-darken-5);
   }
 
+  @if $theme-mode == "light" {
+    // layout-body (dx-drawer) background — #FAFAFA is too close to white, darken it
+    --background-color: #E0E0E0;
+  }
+
   --border-color: var(--dx-color-border);
   --accent-color: var(--dx-color-primary);
   --success-color: var(--dx-color-success);
